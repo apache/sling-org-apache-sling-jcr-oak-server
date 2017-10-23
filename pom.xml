@@ -36,7 +36,7 @@
   <description>This bundle provides a SlingRepository based on Apache Jackrabbit Oak.</description>
 
   <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-oak-server.git</conncetion>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-oak-server.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-oak-server.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-jcr-oak-server.git</url>
   </scm>
