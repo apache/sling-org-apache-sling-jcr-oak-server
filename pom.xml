@@ -42,7 +42,7 @@
 
   <properties>
     <jackrabbit.version>2.16.0</jackrabbit.version>
-    <oak.version>1.6.8</oak.version>
+    <oak.version>1.8.0</oak.version>
     <org.ops4j.pax.exam.version>4.11.0</org.ops4j.pax.exam.version>
   </properties>
 
@@ -208,6 +208,13 @@
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- testing -->
     <dependency>
       <groupId>junit</groupId>
