@@ -47,8 +47,6 @@ import org.apache.jackrabbit.oak.plugins.nodetype.TypeEditorProvider;
 import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
 import org.apache.jackrabbit.oak.plugins.version.VersionHook;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
-import org.apache.jackrabbit.oak.spi.mount.MountInfoProvider;
-import org.apache.jackrabbit.oak.spi.mount.Mounts;
 import org.apache.jackrabbit.oak.spi.query.QueryIndex.NodeAggregator;
 import org.apache.jackrabbit.oak.spi.query.WhiteboardIndexProvider;
 import org.apache.jackrabbit.oak.spi.security.SecurityProvider;
