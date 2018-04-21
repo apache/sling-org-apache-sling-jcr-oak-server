@@ -18,11 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import static com.google.common.collect.ImmutableSet.of;
-import static java.util.Collections.singleton;
-import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
-import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
-
 import java.util.Collections;
 import java.util.Dictionary;
 
@@ -69,6 +64,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.Designate;
 
+import static com.google.common.collect.ImmutableSet.of;
+import static java.util.Collections.singleton;
+import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
+import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
+
 /**
  * A Sling repository implementation that wraps the Oak repository
  * implementation from the Jackrabbit Oak project.
@@ -104,7 +104,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         policy = ReferencePolicy.STATIC,
         policyOption = ReferencePolicyOption.GREEDY
     )
-    private SecurityProvider securityProvider = null;
+    private SecurityProvider securityProvider;
 
     private ServiceRegistration nodeAggregatorRegistration;
 
@@ -124,26 +124,26 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             .withAsyncIndexing("async", 5);
 
         final Jcr jcr = new Jcr(oak, false)
-        .with(new InitialContent())
-        .with(new ExtraSlingContent())
+            .with(new InitialContent())
+            .with(new ExtraSlingContent())
 
-        .with(JcrConflictHandler.createJcrConflictHandler())
-        .with(new VersionHook())
+            .with(JcrConflictHandler.createJcrConflictHandler())
+            .with(new VersionHook())
 
-        .with(securityProvider)
+            .with(securityProvider)
 
-        .with(new NameValidatorProvider())
-        .with(new NamespaceEditorProvider())
-        .with(new TypeEditorProvider())
-        .with(new ConflictValidatorProvider())
+            .with(new NameValidatorProvider())
+            .with(new NamespaceEditorProvider())
+            .with(new TypeEditorProvider())
+            .with(new ConflictValidatorProvider())
 
-        // index stuff
-        .with(indexProvider)
-        .with(indexEditorProvider)
-        .with(getDefaultWorkspace())
-        .with(whiteboard)
-        .withFastQueryResultSize(true)
-        .withObservationQueueLength(configuration.oak_observation_queue_length());
+            // index stuff
+            .with(indexProvider)
+            .with(indexEditorProvider)
+            .with(getDefaultWorkspace())
+            .with(whiteboard)
+            .withFastQueryResultSize(true)
+            .withObservationQueueLength(configuration.oak_observation_queue_length());
 
         if (commitRateLimiter != null) {
             jcr.with(commitRateLimiter);
@@ -238,14 +238,14 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
                 // lucene full-text index
                 if (!index.hasChildNode("lucene")) {
                     LuceneIndexHelper.newLuceneIndexDefinition(
-                            index, "lucene", LuceneIndexHelper.JR_PROPERTY_INCLUDES,
-                            of(
-                               "jcr:createdBy",
-                               "jcr:lastModifiedBy",
-                               "sling:alias",
-                               "sling:resourceType",
-                               "sling:vanityPath"),
-                            "async");
+                        index, "lucene", LuceneIndexHelper.JR_PROPERTY_INCLUDES,
+                        of(
+                            "jcr:createdBy",
+                            "jcr:lastModifiedBy",
+                            "sling:alias",
+                            "sling:resourceType",
+                            "sling:vanityPath"),
+                        "async");
                 }
 
             }
