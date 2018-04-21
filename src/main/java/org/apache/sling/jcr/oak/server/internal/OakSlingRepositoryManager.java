@@ -25,8 +25,6 @@ import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefi
 
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.concurrent.Executor;
 
 import javax.jcr.Repository;
 
@@ -55,8 +53,6 @@ import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
-import org.apache.sling.commons.threads.ThreadPool;
-import org.apache.sling.commons.threads.ThreadPoolManager;
 import org.apache.sling.jcr.base.AbstractSlingRepository2;
 import org.apache.sling.jcr.base.AbstractSlingRepositoryManager;
 import org.apache.sling.serviceusermapping.ServiceUserMapper;
@@ -96,13 +92,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     private ComponentContext componentContext;
 
-    @Reference
-    private ThreadPoolManager threadPoolManager = null;
-
-    private ThreadPool threadPool;
-
-    private ServiceRegistration oakExecutorServiceReference;
-
     private final WhiteboardIndexProvider indexProvider = new WhiteboardIndexProvider();
 
     private final WhiteboardIndexEditorProvider indexEditorProvider = new WhiteboardIndexEditorProvider();
@@ -130,13 +119,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         final Whiteboard whiteboard = new OsgiWhiteboard(bundleContext);
         this.indexProvider.start(whiteboard);
         this.indexEditorProvider.start(whiteboard);
-        this.oakExecutorServiceReference = bundleContext.registerService(
-                Executor.class.getName(), new Executor() {
-            @Override
-            public void execute(Runnable command) {
-                threadPool.execute(command);
-            }
-        }, new Hashtable<String, Object>());
 
         final Oak oak = new Oak(nodeStore)
             .withAsyncIndexing("async", 5);
@@ -192,8 +174,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     protected void disposeRepository(Repository repository) {
         this.indexProvider.stop();
         this.indexEditorProvider.stop();
-        this.oakExecutorServiceReference.unregister();
-        this.oakExecutorServiceReference = null;
         ((JackrabbitRepository) repository).shutdown();
     }
 
@@ -209,7 +189,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         if (configuration.oak_observation_limitCommitRate()) {
             commitRateLimiter = new CommitRateLimiter();
         }
-        this.threadPool = threadPoolManager.get("oak-observation");
         this.nodeAggregatorRegistration = bundleContext.registerService(NodeAggregator.class.getName(), getNodeAggregator(), null);
 
         super.start(bundleContext, new Config(defaultWorkspace, disableLoginAdministrative));
@@ -219,8 +198,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     private void deactivate() {
         super.stop();
         this.componentContext = null;
-        this.threadPoolManager.release(this.threadPool);
-        this.threadPool = null;
         this.nodeAggregatorRegistration.unregister();
     }
 

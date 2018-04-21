@@ -17,6 +17,9 @@ Import-Package:\
   org.apache.jackrabbit.test; resolution:=optional,\
   *
 
+Provide-Capability:\
+  osgi.service;objectClass:List<String>="java.util.concurrent.Executor,org.apache.sling.commons.threads.ThreadPool"
+
 -baseline: *
 
 -includeresource:\
