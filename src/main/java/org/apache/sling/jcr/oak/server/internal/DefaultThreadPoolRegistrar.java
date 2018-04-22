@@ -18,6 +18,9 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.apache.sling.commons.threads.ThreadPool;
 import org.apache.sling.commons.threads.ThreadPoolManager;
 import org.osgi.framework.BundleContext;
@@ -44,8 +47,10 @@ public class DefaultThreadPoolRegistrar {
 
     @Activate
     private void activate(final BundleContext bundleContext) {
-        threadPool = threadPoolManager.get(null);
-        serviceRegistration = bundleContext.registerService(ThreadPool.class, threadPool, null);
+        threadPool = threadPoolManager.get(ThreadPoolManager.DEFAULT_THREADPOOL_NAME);
+        final Dictionary<String, String> properties = new Hashtable<>();
+        properties.put("name", ThreadPoolManager.DEFAULT_THREADPOOL_NAME);
+        serviceRegistration = bundleContext.registerService(ThreadPool.class, threadPool, properties);
     }
 
     @Deactivate
