@@ -20,13 +20,9 @@ Import-Package:\
 Provide-Capability:\
   osgi.service;objectClass:List<String>="java.util.concurrent.Executor,org.apache.sling.commons.threads.ThreadPool"
 
--baseline: *
-
 -includeresource:\
   @oak-lucene-*.jar!/org/apache/jackrabbit/oak/plugins/index/lucene/util/LuceneIndexHelper.*
 
 -removeheaders:\
-  Embed-Dependency,\
-  Embed-Transitive,\
   Include-Resource,\
   Private-Package
