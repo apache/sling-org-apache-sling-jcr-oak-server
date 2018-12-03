@@ -49,7 +49,7 @@ public class DefaultThreadPoolRegistrar {
     private void activate(final BundleContext bundleContext) {
         threadPool = threadPoolManager.get(ThreadPoolManager.DEFAULT_THREADPOOL_NAME);
         final Dictionary<String, String> properties = new Hashtable<>();
-        properties.put("name", ThreadPoolManager.DEFAULT_THREADPOOL_NAME);
+        properties.put("name", threadPool.getName());
         serviceRegistration = bundleContext.registerService(ThreadPool.class, threadPool, properties);
     }
 
