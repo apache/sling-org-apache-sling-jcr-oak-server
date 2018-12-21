@@ -18,8 +18,15 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
+import javax.jcr.Node;
+
 import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.Resource;
@@ -28,21 +35,10 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.Node;
-import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 @RunWith(PaxExam.class)
 public class ResourceTypeResolutionIT extends OakServerTestSupport {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceTypeResolutionIT.class);
 
     @Test
     public void checkResourceType() throws Exception {
