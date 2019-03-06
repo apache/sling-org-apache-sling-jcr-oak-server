@@ -124,26 +124,34 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             .withAsyncIndexing("async", 5);
 
         final Jcr jcr = new Jcr(oak, false)
+            // Initial content
             .with(new InitialContent())
             .with(new ExtraSlingContent())
-
+            // Security configuration
+            .with(this.securityProvider)
+            // Index configuration
+            .with(this.indexProvider)
+            .with(this.indexEditorProvider)
+            // Conflict handler, currently a hard-coded list of conflict handlers; should this be dynamic?
             .with(JcrConflictHandler.createJcrConflictHandler())
-            .with(new VersionHook())
-
-            .with(securityProvider)
-
-            .with(new NameValidatorProvider())
-            .with(new NamespaceEditorProvider())
-            .with(new TypeEditorProvider())
-            .with(new ConflictValidatorProvider())
-
-            // index stuff
-            .with(indexProvider)
-            .with(indexEditorProvider)
+            // Other settings
             .with(getDefaultWorkspace())
             .with(whiteboard)
             .withFastQueryResultSize(true)
-            .withObservationQueueLength(configuration.oak_observation_queue_length());
+            .withObservationQueueLength(this.configuration.oak_observation_queue_length());
+        if (this.configuration.dynamic_components()) {
+            jcr.with(new DynamicCompositeCommitHook(whiteboard))
+                .with(new DynamicCompositeEditorProvider(whiteboard));
+        } else {
+            jcr
+                // CommitHooks
+                .with(new VersionHook())
+                // EditorProviders
+                .with(new NameValidatorProvider())
+                .with(new NamespaceEditorProvider())
+                .with(new TypeEditorProvider())
+                .with(new ConflictValidatorProvider());
+        }
 
         if (commitRateLimiter != null) {
             jcr.with(commitRateLimiter);

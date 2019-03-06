@@ -42,6 +42,12 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     )
     String defaultWorkspace() default "default";
 
+    @AttributeDefinition(
+        name = "Enable Dynamic Components",
+        description = "Use the Whiteboard dynamically for looking up CommitHook-s and EditorProvider-s."
+        )
+    boolean dynamic_components() default true;
+
     // For backwards compatibility loginAdministrative is still enabled
     // In future releases, this default may change to false.
     @AttributeDefinition(
