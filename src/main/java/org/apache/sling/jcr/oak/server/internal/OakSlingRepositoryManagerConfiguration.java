@@ -46,7 +46,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         name = "Enable Dynamic Components",
         description = "Use the Whiteboard dynamically for looking up RepositoryInitializer-s, CommitHook-s, and EditorProvider-s."
         )
-    boolean dynamic_components() default true;
+    boolean dynamic() default true;
 
     // For backwards compatibility loginAdministrative is still enabled
     // In future releases, this default may change to false.

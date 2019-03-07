@@ -146,7 +146,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             .with(whiteboard)
             .withFastQueryResultSize(true)
             .withObservationQueueLength(this.configuration.oak_observation_queue_length());
-        if (this.configuration.dynamic_components()) {
+        if (this.configuration.dynamic()) {
             // Additional RepositoryInitializers; the two initializers added above are not proper components, so they
             // will not be included in this dynamic list
             this.repositoryInitializer = new WhiteboardRepositoryInitializer();

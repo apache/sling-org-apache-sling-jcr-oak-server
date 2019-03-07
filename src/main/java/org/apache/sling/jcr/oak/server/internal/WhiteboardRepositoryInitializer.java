@@ -26,7 +26,7 @@ import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 /**
  * An aggregator {@link RepositoryInitializer} which combines all the {@link RepositoryInitializer} components
  * registered in the {@link Whiteboard}. This is used automatically by {@link OakSlingRepositoryManager} whenever
- * {@link OakSlingRepositoryManagerConfiguration#dynamic_components()} is {@code true}.
+ * {@link OakSlingRepositoryManagerConfiguration#dynamic()} is {@code true}.
  * <p>
  * This should be part of org.apache.jackrabbit.oak.spi.lifecycle instead.
  * </p>

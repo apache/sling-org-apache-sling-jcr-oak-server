@@ -31,7 +31,7 @@ import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 /**
  * An aggregator {@link CommitHook} which combines all the {@link CommitHook} components registered in the
  * {@link Whiteboard}. This is used automatically by {@link OakSlingRepositoryManager} whenever
- * {@link OakSlingRepositoryManagerConfiguration#dynamic_components()} is {@code true}.
+ * {@link OakSlingRepositoryManagerConfiguration#dynamic()} is {@code true}.
  * <p>
  * This should be part of org.apache.jackrabbit.oak.spi.commit instead.
  * </p>
