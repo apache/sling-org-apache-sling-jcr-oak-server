@@ -44,7 +44,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
     @AttributeDefinition(
         name = "Enable Dynamic Components",
-        description = "Use the Whiteboard dynamically for looking up CommitHook-s and EditorProvider-s."
+        description = "Use the Whiteboard dynamically for looking up RepositoryInitializer-s, CommitHook-s, and EditorProvider-s."
         )
     boolean dynamic_components() default true;
 

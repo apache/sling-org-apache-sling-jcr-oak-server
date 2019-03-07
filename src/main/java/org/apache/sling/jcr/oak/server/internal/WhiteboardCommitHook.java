@@ -25,31 +25,24 @@ import org.apache.jackrabbit.oak.spi.commit.CommitHook;
 import org.apache.jackrabbit.oak.spi.commit.CommitInfo;
 import org.apache.jackrabbit.oak.spi.commit.CompositeHook;
 import org.apache.jackrabbit.oak.spi.state.NodeState;
-import org.apache.jackrabbit.oak.spi.whiteboard.Tracker;
+import org.apache.jackrabbit.oak.spi.whiteboard.AbstractServiceTracker;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 
 /**
  * An aggregator {@link CommitHook} which combines all the {@link CommitHook} components registered in the
  * {@link Whiteboard}. This is used automatically by {@link OakSlingRepositoryManager} whenever
  * {@link OakSlingRepositoryManagerConfiguration#dynamic_components()} is {@code true}.
+ * <p>
+ * This should be part of org.apache.jackrabbit.oak.spi.commit instead.
+ * </p>
  *
  * @version $Id$
  */
-final class DynamicCompositeCommitHook implements CommitHook
+final class WhiteboardCommitHook extends AbstractServiceTracker<CommitHook> implements CommitHook
 {
-    /**
-     * Provides access to the live list of registered {@link CommitHook} components.
-     */
-    private final Tracker<CommitHook> hooks;
-
-    /**
-     * Constructor, needs the {@link Whiteboard} that provides access to registered components.
-     *
-     * @param whiteboard the {@link Whiteboard} in use, must not be {@code null}
-     */
-    public DynamicCompositeCommitHook(final Whiteboard whiteboard)
+    public WhiteboardCommitHook()
     {
-        this.hooks = whiteboard.track(CommitHook.class);
+        super(CommitHook.class);
     }
 
     @Override
@@ -57,7 +50,7 @@ final class DynamicCompositeCommitHook implements CommitHook
     {
         return CompositeHook.compose(
             // All registered CommitHook components
-            this.hooks.getServices().stream()
+            getServices().stream()
                 // Excluding composite hooks, such as this one
                 .filter(i -> !(i instanceof CompositeHook)).collect(Collectors.toList()))
             // Forward the call
