@@ -34,14 +34,6 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.query.Query;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
-import org.apache.jackrabbit.oak.api.CommitFailedException;
-import org.apache.jackrabbit.oak.spi.commit.CommitHook;
-import org.apache.jackrabbit.oak.spi.commit.CommitInfo;
-import org.apache.jackrabbit.oak.spi.commit.DefaultEditor;
-import org.apache.jackrabbit.oak.spi.commit.Editor;
-import org.apache.jackrabbit.oak.spi.commit.EditorProvider;
-import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
-import org.apache.jackrabbit.oak.spi.state.NodeState;
 import org.apache.sling.api.SlingConstants;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -344,75 +336,5 @@ public class OakServerIT extends OakServerTestSupport {
         }
 
         log.info("Running on Oak version {}", repository.getDescriptor("jcr.repository.version"));
-    }
-
-    @Test
-    public void testDynamicCommitHooksAndEditorsAreInvoked() throws Exception
-    {
-        final ServiceRegistration<CommitHook> reg =
-            this.bundleContext.registerService(CommitHook.class, new TestCommitHook(), null);
-        final ServiceRegistration<EditorProvider> reg2 =
-            this.bundleContext.registerService(EditorProvider.class, new TestEditorProvider(), null);
-        final Session s = this.repository.loginAdministrative(null);
-        final String path = "/" + uniqueName("dynamicHooks");
-        try {
-            final Node n = s.getRootNode().addNode(path.substring(1));
-            n.setProperty("foo", "bar");
-            s.save();
-            // Since tests are run in parallel, sometimes another test may trigger the hook,
-            // so check that it was invoked at least once
-            assertTrue(TestCommitHook.getInvokedCount() >= 1);
-            assertTrue(TestEditor.getInvokedCount() >= 1);
-        } finally {
-            reg.unregister();
-            reg2.unregister();
-            s.logout();
-        }
-    }
-
-    private static final class TestCommitHook implements CommitHook
-    {
-        private static int invokedCount = 0;
-
-        @Override
-        public NodeState processCommit(NodeState before, NodeState after, CommitInfo info)
-            throws CommitFailedException
-        {
-            invokedCount++;
-            return after;
-        }
-
-        public static int getInvokedCount()
-        {
-            return invokedCount;
-        }
-    }
-
-    private static final class TestEditor extends DefaultEditor
-    {
-        private static int invokedCount = 0;
-
-        @Override
-        public Editor childNodeAdded(String name, NodeState after)
-            throws CommitFailedException
-        {
-            invokedCount++;
-            return null;
-        }
-
-        public static int getInvokedCount()
-        {
-            return invokedCount;
-        }
-    }
-
-    private static final class TestEditorProvider implements EditorProvider
-    {
-        @Override
-        public Editor getRootEditor(NodeState before, NodeState after, NodeBuilder builder, CommitInfo info)
-            throws CommitFailedException
-        {
-            return new TestEditor();
-        }
     }
 }
