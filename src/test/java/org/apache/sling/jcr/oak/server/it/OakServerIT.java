@@ -337,5 +337,4 @@ public class OakServerIT extends OakServerTestSupport {
 
         log.info("Running on Oak version {}", repository.getDescriptor("jcr.repository.version"));
     }
-
 }

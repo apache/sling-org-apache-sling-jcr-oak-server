@@ -39,6 +39,7 @@ import org.apache.jackrabbit.oak.plugins.name.NamespaceEditorProvider;
 import org.apache.jackrabbit.oak.plugins.nodetype.TypeEditorProvider;
 import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
 import org.apache.jackrabbit.oak.plugins.version.VersionHook;
+import org.apache.jackrabbit.oak.spi.commit.WhiteboardEditorProvider;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
 import org.apache.jackrabbit.oak.spi.query.QueryIndex.NodeAggregator;
 import org.apache.jackrabbit.oak.spi.query.WhiteboardIndexProvider;
@@ -108,6 +109,12 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     private ServiceRegistration nodeAggregatorRegistration;
 
+    private WhiteboardCommitHook commitHook;
+
+    private WhiteboardEditorProvider editorProvider;
+
+    private WhiteboardRepositoryInitializer repositoryInitializer;
+
     @Override
     protected ServiceUserMapper getServiceUserMapper() {
         return this.serviceUserMapper;
@@ -124,26 +131,45 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             .withAsyncIndexing("async", 5);
 
         final Jcr jcr = new Jcr(oak, false)
+            // Initial content
             .with(new InitialContent())
             .with(new ExtraSlingContent())
-
+            // Security configuration
+            .with(this.securityProvider)
+            // Index configuration
+            .with(this.indexProvider)
+            .with(this.indexEditorProvider)
+            // Conflict handler, currently a hard-coded list of conflict handlers; should this be dynamic?
             .with(JcrConflictHandler.createJcrConflictHandler())
-            .with(new VersionHook())
-
-            .with(securityProvider)
-
-            .with(new NameValidatorProvider())
-            .with(new NamespaceEditorProvider())
-            .with(new TypeEditorProvider())
-            .with(new ConflictValidatorProvider())
-
-            // index stuff
-            .with(indexProvider)
-            .with(indexEditorProvider)
+            // Other settings
             .with(getDefaultWorkspace())
             .with(whiteboard)
             .withFastQueryResultSize(true)
-            .withObservationQueueLength(configuration.oak_observation_queue_length());
+            .withObservationQueueLength(this.configuration.oak_observation_queue_length());
+        if (this.configuration.dynamic()) {
+            // Additional RepositoryInitializers; the two initializers added above are not proper components, so they
+            // will not be included in this dynamic list
+            this.repositoryInitializer = new WhiteboardRepositoryInitializer();
+            this.repositoryInitializer.start(whiteboard);
+            jcr.with(this.repositoryInitializer);
+            // CommitHooks
+            this.commitHook = new WhiteboardCommitHook();
+            this.commitHook.start(whiteboard);
+            jcr.with(this.commitHook);
+            // EditorProviders
+            this.editorProvider = new WhiteboardEditorProvider();
+            this.editorProvider.start(whiteboard);
+            jcr.with(this.editorProvider);
+        } else {
+            jcr
+                // CommitHooks
+                .with(new VersionHook())
+                // EditorProviders
+                .with(new NameValidatorProvider())
+                .with(new NamespaceEditorProvider())
+                .with(new TypeEditorProvider())
+                .with(new ConflictValidatorProvider());
+        }
 
         if (commitRateLimiter != null) {
             jcr.with(commitRateLimiter);
@@ -174,6 +200,15 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     protected void disposeRepository(Repository repository) {
         this.indexProvider.stop();
         this.indexEditorProvider.stop();
+        if (this.editorProvider != null) {
+            this.editorProvider.stop();
+        }
+        if (this.commitHook != null) {
+            this.commitHook.stop();
+        }
+        if (this.repositoryInitializer != null) {
+            this.repositoryInitializer.stop();
+        }
         ((JackrabbitRepository) repository).shutdown();
     }
 
