@@ -49,6 +49,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
@@ -156,7 +157,8 @@ public abstract class OakServerTestSupport extends TestSupport {
             // Sling JCR Oak Server
             testBundle("bundle.filename"),
             // testing
-            junitBundles()
+            junitBundles(),
+            vmOption(System.getProperty("jacoco.command"))
         };
     }
 
