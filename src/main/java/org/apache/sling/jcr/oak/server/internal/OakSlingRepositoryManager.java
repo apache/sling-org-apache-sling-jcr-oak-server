@@ -135,7 +135,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             .with(indexProvider)
             .with(indexEditorProvider)
             .with(getDefaultWorkspace())
-            .withFastQueryResultSize(true)
+            .withFastQueryResultSize(configuration.oak_query_fastResultSize())
             .withObservationQueueLength(configuration.oak_observation_queue_length());
         
         for (RepositoryInitializer initializer : initializers.getServices()){

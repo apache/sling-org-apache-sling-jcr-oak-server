@@ -66,4 +66,11 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     )
     boolean oak_observation_limitCommitRate() default false;
 
+    
+    @AttributeDefinition(
+        name = "Fast query result size",
+        description = "Whether the query result size should return an estimation (or -1 if disabled) for large queries"
+    )
+    boolean oak_query_fastResultSize() default true;
+
 }
