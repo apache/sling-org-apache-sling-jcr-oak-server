@@ -18,6 +18,11 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
+import static com.google.common.collect.ImmutableSet.of;
+import static java.util.Collections.singleton;
+import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
+import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
+
 import java.util.Collections;
 import java.util.Dictionary;
 
@@ -25,20 +30,15 @@ import javax.jcr.Repository;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.oak.InitialContent;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.osgi.OsgiWhiteboard;
-import org.apache.jackrabbit.oak.plugins.commit.ConflictValidatorProvider;
 import org.apache.jackrabbit.oak.plugins.commit.JcrConflictHandler;
 import org.apache.jackrabbit.oak.plugins.index.WhiteboardIndexEditorProvider;
 import org.apache.jackrabbit.oak.plugins.index.aggregate.SimpleNodeAggregator;
 import org.apache.jackrabbit.oak.plugins.index.lucene.util.LuceneIndexHelper;
-import org.apache.jackrabbit.oak.plugins.name.NameValidatorProvider;
-import org.apache.jackrabbit.oak.plugins.name.NamespaceEditorProvider;
-import org.apache.jackrabbit.oak.plugins.nodetype.TypeEditorProvider;
 import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
-import org.apache.jackrabbit.oak.plugins.version.VersionHook;
+import org.apache.jackrabbit.oak.spi.commit.WhiteboardEditorProvider;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
 import org.apache.jackrabbit.oak.spi.query.QueryIndex.NodeAggregator;
 import org.apache.jackrabbit.oak.spi.query.WhiteboardIndexProvider;
@@ -47,6 +47,7 @@ import org.apache.jackrabbit.oak.spi.security.user.UserConfiguration;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
+import org.apache.jackrabbit.oak.spi.whiteboard.Tracker;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 import org.apache.sling.jcr.base.AbstractSlingRepository2;
 import org.apache.sling.jcr.base.AbstractSlingRepositoryManager;
@@ -63,11 +64,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.Designate;
-
-import static com.google.common.collect.ImmutableSet.of;
-import static java.util.Collections.singleton;
-import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
-import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
 
 /**
  * A Sling repository implementation that wraps the Oak repository
@@ -92,9 +88,13 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     private ComponentContext componentContext;
 
+    private final WhiteboardEditorProvider editorProvider = new WhiteboardEditorProvider();
+    
     private final WhiteboardIndexProvider indexProvider = new WhiteboardIndexProvider();
 
     private final WhiteboardIndexEditorProvider indexEditorProvider = new WhiteboardIndexEditorProvider();
+
+    private Tracker<RepositoryInitializer> initializers;
 
     private CommitRateLimiter commitRateLimiter;
 
@@ -106,7 +106,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     )
     private SecurityProvider securityProvider;
 
-    private ServiceRegistration nodeAggregatorRegistration;
+    private ServiceRegistration<NodeAggregator> nodeAggregatorRegistration;
 
     @Override
     protected ServiceUserMapper getServiceUserMapper() {
@@ -117,34 +117,31 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     protected Repository acquireRepository() {
         final BundleContext bundleContext = componentContext.getBundleContext();
         final Whiteboard whiteboard = new OsgiWhiteboard(bundleContext);
+        this.initializers = whiteboard.track(RepositoryInitializer.class);
+        this.editorProvider.start(whiteboard);
         this.indexProvider.start(whiteboard);
         this.indexEditorProvider.start(whiteboard);
 
         final Oak oak = new Oak(nodeStore)
             .withAsyncIndexing("async", 5);
 
-        final Jcr jcr = new Jcr(oak, false)
-            .with(new InitialContent())
+        final Jcr jcr = new Jcr(oak)
             .with(new ExtraSlingContent())
-
             .with(JcrConflictHandler.createJcrConflictHandler())
-            .with(new VersionHook())
-
+            .with(whiteboard)
             .with(securityProvider)
-
-            .with(new NameValidatorProvider())
-            .with(new NamespaceEditorProvider())
-            .with(new TypeEditorProvider())
-            .with(new ConflictValidatorProvider())
-
+            .with(editorProvider)
             // index stuff
             .with(indexProvider)
             .with(indexEditorProvider)
             .with(getDefaultWorkspace())
-            .with(whiteboard)
-            .withFastQueryResultSize(true)
+            .withFastQueryResultSize(configuration.oak_query_fastResultSize())
             .withObservationQueueLength(configuration.oak_observation_queue_length());
-
+        
+        for (RepositoryInitializer initializer : initializers.getServices()){
+            jcr.with(initializer);
+        }
+        
         if (commitRateLimiter != null) {
             jcr.with(commitRateLimiter);
         }
@@ -172,8 +169,10 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     @Override
     protected void disposeRepository(Repository repository) {
+        this.initializers.stop();    	
         this.indexProvider.stop();
         this.indexEditorProvider.stop();
+        this.editorProvider.stop();
         ((JackrabbitRepository) repository).shutdown();
     }
 
@@ -189,7 +188,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         if (configuration.oak_observation_limitCommitRate()) {
             commitRateLimiter = new CommitRateLimiter();
         }
-        this.nodeAggregatorRegistration = bundleContext.registerService(NodeAggregator.class.getName(), getNodeAggregator(), null);
+        this.nodeAggregatorRegistration = bundleContext.registerService(NodeAggregator.class, getNodeAggregator(), null);
 
         super.start(bundleContext, new Config(defaultWorkspace, disableLoginAdministrative));
     }

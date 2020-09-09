@@ -37,10 +37,10 @@ public class ResourceEventListener implements EventHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Set<String> paths = new HashSet<String>();
 
-    ServiceRegistration register(BundleContext ctx, String osgiEventTopic) {
+    ServiceRegistration<EventHandler> register(BundleContext ctx, String osgiEventTopic) {
         final Hashtable<String, Object> props = new Hashtable<String, Object>();
         props.put(EventConstants.EVENT_TOPIC, osgiEventTopic);
-        return ctx.registerService(EventHandler.class.getName(), this, props);
+        return ctx.registerService(EventHandler.class, this, props);
     }
 
     @Override

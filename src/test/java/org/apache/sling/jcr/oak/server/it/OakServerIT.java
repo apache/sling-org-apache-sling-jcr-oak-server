@@ -42,6 +42,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,7 +219,7 @@ public class OakServerIT extends OakServerTestSupport {
     @Test
     public void testOsgiResourceEvents() throws RepositoryException {
         final ResourceEventListener listener = new ResourceEventListener();
-        final ServiceRegistration reg = listener.register(bundleContext, SlingConstants.TOPIC_RESOURCE_ADDED);
+        final ServiceRegistration<EventHandler> reg = listener.register(bundleContext, SlingConstants.TOPIC_RESOURCE_ADDED);
         final Session s = repository.loginAdministrative(null);
         final int nPaths = 2500 * TEST_SCALE;
         final int timeoutMsec = 2 * nPaths;
