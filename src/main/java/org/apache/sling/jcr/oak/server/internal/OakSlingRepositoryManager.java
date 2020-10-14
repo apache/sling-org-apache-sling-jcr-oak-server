@@ -30,6 +30,7 @@ import javax.jcr.Repository;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.oak.InitialContent;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.osgi.OsgiWhiteboard;
@@ -38,6 +39,7 @@ import org.apache.jackrabbit.oak.plugins.index.WhiteboardIndexEditorProvider;
 import org.apache.jackrabbit.oak.plugins.index.aggregate.SimpleNodeAggregator;
 import org.apache.jackrabbit.oak.plugins.index.lucene.util.LuceneIndexHelper;
 import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
+import org.apache.jackrabbit.oak.plugins.version.VersionHook;
 import org.apache.jackrabbit.oak.spi.commit.WhiteboardEditorProvider;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
 import org.apache.jackrabbit.oak.spi.query.QueryIndex.NodeAggregator;
@@ -125,9 +127,11 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         final Oak oak = new Oak(nodeStore)
             .withAsyncIndexing("async", 5);
 
-        final Jcr jcr = new Jcr(oak)
+        final Jcr jcr = new Jcr(oak, false)
+            .with(new InitialContent())
             .with(new ExtraSlingContent())
             .with(JcrConflictHandler.createJcrConflictHandler())
+            .with(new VersionHook())
             .with(whiteboard)
             .with(securityProvider)
             .with(editorProvider)
