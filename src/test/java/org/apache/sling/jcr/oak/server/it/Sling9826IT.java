@@ -42,13 +42,13 @@ import org.ops4j.pax.exam.junit.PaxExam;
 
 @RunWith(PaxExam.class)
 public class Sling9826IT extends OakServerTestSupport {
-	private Session adminSession = null;
-	private String testFolderPath;
-	private String temp1Path;
-	private String temp2Path;
-	
-	@Before
-	public void setup() throws RepositoryException {
+    private Session adminSession = null;
+    private String testFolderPath;
+    private String temp1Path;
+    private String temp2Path;
+    
+    @Before
+    public void setup() throws RepositoryException {
         adminSession = (JackrabbitSession)slingRepository.loginAdministrative(null);
         
         Node testFolder = JcrUtils.getOrCreateByPath("/content/sling9826", true, "sling:Folder", "sling:Folder", adminSession, false);
@@ -57,72 +57,72 @@ public class Sling9826IT extends OakServerTestSupport {
         temp1Path = temp1Node.getPath();
         Node temp2Node = JcrUtils.getOrCreateByPath(testFolder, "temp2", true, "sling:Folder", "sling:Folder", false);
         temp2Path = temp2Node.getPath();
-		if (adminSession.hasPendingChanges()) {
-			adminSession.save();
-		}
-	}
-	
-	@After
-	public void teardown() throws RepositoryException {
-		if (adminSession != null) {
-			adminSession.refresh(false);
+        if (adminSession.hasPendingChanges()) {
+            adminSession.save();
+        }
+    }
+    
+    @After
+    public void teardown() throws RepositoryException {
+        if (adminSession != null) {
+            adminSession.refresh(false);
 
-			if (testFolderPath != null && adminSession.itemExists(testFolderPath)) {
-				adminSession.getItem(testFolderPath).remove();
-			}
-			
-			if (adminSession.hasPendingChanges()) {
-				adminSession.save();
-			}
-			
-			adminSession.logout();
-		}
-		adminSession = null;
-		temp1Path = null;
-		temp2Path = null;
-		testFolderPath = null;
-	}
-	
-	/**
-	 * SLING-9826 - test that jcr:uuid index is updated on move
-	 */
+            if (testFolderPath != null && adminSession.itemExists(testFolderPath)) {
+                adminSession.getItem(testFolderPath).remove();
+            }
+            
+            if (adminSession.hasPendingChanges()) {
+                adminSession.save();
+            }
+            
+            adminSession.logout();
+        }
+        adminSession = null;
+        temp1Path = null;
+        temp2Path = null;
+        testFolderPath = null;
+    }
+    
+    /**
+     * SLING-9826 - test that jcr:uuid index is updated on move
+     */
     @Test
     public void checkUuidIndexUpdatedOnMove() throws Exception {
-		// create the node to move
-    	Node parent = adminSession.getNode(temp1Path);
-	    String childName = "child" + System.currentTimeMillis();
-	    Node child = parent.addNode(childName, "sling:Folder");
-	    child.addMixin("mix:referenceable");
-	    adminSession.save();
-	    
-	    // verify the id and lookup by id and query works 
-	    String id = child.getIdentifier();
-	    assertNotNull(adminSession.getNodeByIdentifier(id));
-	    verifyLookupByIdentifier(id);
+        // create the node to move
+        Node parent = adminSession.getNode(temp1Path);
+        String childName = "child" + System.currentTimeMillis();
+        Node child = parent.addNode(childName, "sling:Folder");
+        child.addMixin("mix:referenceable");
+        adminSession.save();
+        
+        // verify the id and lookup by id and query works 
+        String id = child.getIdentifier();
+        assertNotNull(adminSession.getNodeByIdentifier(id));
+        verifyLookupByIdentifier(id);
 
-	    // move it
-	    adminSession.move(child.getPath(), temp2Path + childName);
-	    adminSession.save();
-	    
-	    // verify the id and lookup by id and query works 
-	    verifyLookupByIdentifier(id);
+        // move it
+        adminSession.move(child.getPath(), temp2Path + childName);
+        adminSession.save();
+        
+        // verify the id and lookup by id and query works 
+        verifyLookupByIdentifier(id);
     }
 
-	protected void verifyLookupByIdentifier(String id)
-			throws ItemNotFoundException, RepositoryException, InvalidQueryException {
-		// verify lookup by id
-	    Node nodeByIdentifier = adminSession.getNodeByIdentifier(id);
-	    assertNotNull(nodeByIdentifier);
-	    assertEquals(id, nodeByIdentifier.getIdentifier());
+    protected void verifyLookupByIdentifier(String id)
+            throws ItemNotFoundException, RepositoryException, InvalidQueryException {
+        // verify lookup by id
+        Node nodeByIdentifier = adminSession.getNodeByIdentifier(id);
+        assertNotNull(nodeByIdentifier);
+        assertEquals(id, nodeByIdentifier.getIdentifier());
 
-	    // verify lookup by query
-	    Query query = adminSession.getWorkspace().getQueryManager().createQuery(String.format("SELECT * FROM [nt:base] WHERE [jcr:uuid] = '%s'", id), Query.JCR_SQL2);
-	    QueryResult execute = query.execute();
-	    NodeIterator nodes = execute.getNodes();
-	    assertTrue(nodes.hasNext());
-	    Node nextNode = nodes.nextNode();
-	    assertNotNull(nextNode);
-	    assertEquals(id, nextNode.getIdentifier());
-	}
+        // verify lookup by query
+        Query query = adminSession.getWorkspace().getQueryManager().createQuery(String.format("SELECT * FROM [nt:base] WHERE [jcr:uuid] = '%s'", id), Query.JCR_SQL2);
+        QueryResult execute = query.execute();
+        NodeIterator nodes = execute.getNodes();
+        assertTrue(nodes.hasNext());
+        Node nextNode = nodes.nextNode();
+        assertNotNull(nextNode);
+        assertEquals(id, nextNode.getIdentifier());
+    }
     
 }
