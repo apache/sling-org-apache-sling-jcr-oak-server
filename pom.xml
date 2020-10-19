@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.sling</groupId>
     <artifactId>sling-bundle-parent</artifactId>
-    <version>38</version>
+    <version>40</version>
     <relativePath />
   </parent>
 
@@ -45,6 +45,7 @@
     <jackrabbit.version>2.16.3</jackrabbit.version>
     <oak.version>1.8.9</oak.version>
     <org.ops4j.pax.exam.version>4.13.3</org.ops4j.pax.exam.version>
+    <project.build.outputTimestamp>2020-07-27T15:10:15Z</project.build.outputTimestamp>
   </properties>
 
   <build>
