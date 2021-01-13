@@ -18,13 +18,11 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import static com.google.common.collect.ImmutableSet.of;
-import static java.util.Collections.singleton;
-import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
-import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
-
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.jcr.Repository;
 
@@ -67,6 +65,10 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.Designate;
 
+import static java.util.Collections.singleton;
+import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
+import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
+
 /**
  * A Sling repository implementation that wraps the Oak repository
  * implementation from the Jackrabbit Oak project.
@@ -81,6 +83,16 @@ import org.osgi.service.metatype.annotations.Designate;
     ocd = OakSlingRepositoryManagerConfiguration.class
 )
 public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
+
+    private static final Set<String> LUCENE_INDEX_EXCLUDES = new HashSet<>(
+        Arrays.asList(
+            "jcr:createdBy",
+            "jcr:lastModifiedBy",
+            "sling:alias",
+            "sling:resourceType",
+            "sling:vanityPath"
+        )
+    );
 
     @Reference
     private ServiceUserMapper serviceUserMapper;
@@ -241,14 +253,12 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
                 // lucene full-text index
                 if (!index.hasChildNode("lucene")) {
                     LuceneIndexHelper.newLuceneIndexDefinition(
-                        index, "lucene", LuceneIndexHelper.JR_PROPERTY_INCLUDES,
-                        of(
-                            "jcr:createdBy",
-                            "jcr:lastModifiedBy",
-                            "sling:alias",
-                            "sling:resourceType",
-                            "sling:vanityPath"),
-                        "async");
+                        index,
+                        "lucene",
+                        LuceneIndexHelper.JR_PROPERTY_INCLUDES,
+                        LUCENE_INDEX_EXCLUDES,
+                        "async"
+                    );
                 }
 
             }
