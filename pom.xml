@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.sling</groupId>
     <artifactId>sling-bundle-parent</artifactId>
-    <version>41</version>
+    <version>47</version>
     <relativePath />
   </parent>
 
@@ -38,7 +38,7 @@
     <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-oak-server.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-jcr-oak-server.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-jcr-oak-server.git</url>
-    <tag>org.apache.sling.jcr.oak.server-1.2.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -76,34 +76,8 @@
               <name>bundle.filename</name>
               <value>${basedir}/target/${project.build.finalName}.jar</value>
             </property>
-            <property>
-              <name>jacoco.command</name>
-              <value>${jacoco.command}</value>
-            </property>
           </systemProperties>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <configuration>
-              <propertyName>jacoco.command</propertyName>
-            </configuration>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
