@@ -57,7 +57,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * Custom <tt>JackrabbitSession</tt> that ensures that the correct <tt>TCCL</tt> is set in OSGi environments
+ * Custom <code>JackrabbitSession</code> that ensures that the correct Thread Context ClassLoader is set in OSGi environments
  *
  *
  * @see #TcclWrappingJackrabbitSession(JackrabbitSession)

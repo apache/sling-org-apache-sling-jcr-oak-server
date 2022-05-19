@@ -32,7 +32,7 @@ import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.oak.Oak;
 
 /**
- * Custom <tt>JackrabbitRepository</tt> that ensures that the correct <tt>TCCL</tt> is set in OSGi environments
+ * Custom <code>JackrabbitRepository</code> that ensures that the correct Thread Context ClassLoader is set in OSGi environments
  *
  * <p>Oak still requires that for {@link JackrabbitRepository#login()} and
  * {@link JackrabbitSession#impersonate(Credentials)} calls a custom thread context class loader is set. This wrapper
