@@ -42,6 +42,7 @@
   </scm>
 
   <properties>
+    <javadoc.excludePackageNames />
     <jackrabbit.version>2.16.3</jackrabbit.version>
     <oak.version>1.8.9</oak.version>
     <org.ops4j.pax.exam.version>4.13.3</org.ops4j.pax.exam.version>
