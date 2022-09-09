@@ -46,9 +46,9 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
@@ -59,13 +59,13 @@ public class OakServerIT extends OakServerTestSupport {
 
     @Test
     public void testRepositoryPresent() {
-        assertNotNull(repository);
+        assertThat(repository, notNullValue());
     }
 
     @Test
     public void testLoginAdministrative() throws RepositoryException {
         final Session s = repository.loginAdministrative(null);
-        assertNotNull(s);
+        assertThat(s, notNullValue());
         s.logout();
     }
 
@@ -84,14 +84,14 @@ public class OakServerIT extends OakServerTestSupport {
     @Test
     public void testAnonymousLoginA() throws RepositoryException {
         final Session s = repository.login();
-        assertNotNull(s);
+        assertThat(s, notNullValue());
         s.logout();
     }
 
     @Test
     public void testAnonymousLoginB() throws RepositoryException {
         final Session s = repository.login(null, null);
-        assertNotNull(s);
+        assertThat(s, notNullValue());
         s.logout();
     }
 
@@ -110,9 +110,9 @@ public class OakServerIT extends OakServerTestSupport {
         final String path = assertCreateRetrieveNode(null, "content/foo");
         final Session s = repository.login();
         try {
-            assertTrue("Expecting anonymous to see " + path, s.itemExists(path));
+            assertThat("Expecting anonymous to see " + path, s.itemExists(path), is(true));
             final Node n = s.getNode(path);
-            assertEquals("Expecting anonymous to see the foo property", path, n.getProperty("foo").getString());
+            assertThat("Expecting anonymous to see the foo property", path, is(n.getProperty("foo").getString()));
         } finally {
             s.logout();
         }
@@ -149,7 +149,7 @@ public class OakServerIT extends OakServerTestSupport {
                 it.next();
                 count++;
             }
-            assertEquals("Expected " + N_NODES + " result for query " + stmt, N_NODES, count);
+            assertThat("Expected " + N_NODES + " result for query " + stmt, count, is(N_NODES));
         } finally {
             s.logout();
         }
@@ -169,7 +169,7 @@ public class OakServerIT extends OakServerTestSupport {
             @SuppressWarnings("deprecation")
             final Query q = s.getWorkspace().getQueryManager().createQuery(statement, Query.XPATH);
             final NodeIterator it = q.execute().getNodes();
-            assertTrue("Expecting a non-empty result", it.hasNext());
+            assertThat("Expecting a non-empty result", it.hasNext(), is(true));
             boolean found = false;
             while(it.hasNext()) {
                 if(it.nextNode().getPath().equals(absPath)) {
@@ -177,7 +177,7 @@ public class OakServerIT extends OakServerTestSupport {
                     break;
                 }
             }
-            assertTrue("Expecting test node " + absPath + " to be found", found);
+            assertThat("Expecting test node " + absPath + " to be found", found, is(true));
         } finally {
             s.logout();
         }
@@ -191,7 +191,7 @@ public class OakServerIT extends OakServerTestSupport {
             final Node child = deleteAfterTests(s.getRootNode().addNode(path));
             final Property p = child.setProperty("foo", "bar");
             s.save();
-            assertNotNull(p.getBinary().getStream());
+            assertThat(p.getBinary().getStream(), notNullValue());
         } finally {
             s.logout();
         }
@@ -289,7 +289,7 @@ public class OakServerIT extends OakServerTestSupport {
             new Retry(5000) {
                 @Override
                 protected void exec() throws Exception {
-                    assertTrue("Expecting JCR events after adding " + path, c.get() > 0);
+                    assertThat("Expecting JCR events after adding " + path, c.get() > 0, is(true));
                 }
             };
 
@@ -314,7 +314,7 @@ public class OakServerIT extends OakServerTestSupport {
             new Retry(5000) {
                 @Override
                 protected void exec() throws Exception {
-                    assertTrue("Expecting JCR events after modifying " + path, c.get() > 0);
+                    assertThat("Expecting JCR events after modifying " + path, c.get() > 0, is(true));
                 }
             };
 

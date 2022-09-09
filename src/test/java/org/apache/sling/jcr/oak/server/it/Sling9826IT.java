@@ -18,10 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -39,6 +35,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(PaxExam.class)
 public class Sling9826IT extends OakServerTestSupport {
@@ -97,7 +96,7 @@ public class Sling9826IT extends OakServerTestSupport {
         
         // verify the id and lookup by id and query works 
         String id = child.getIdentifier();
-        assertNotNull(adminSession.getNodeByIdentifier(id));
+        assertThat(adminSession.getNodeByIdentifier(id), notNullValue());
         verifyLookupByIdentifier(id);
 
         // move it
@@ -112,17 +111,17 @@ public class Sling9826IT extends OakServerTestSupport {
             throws ItemNotFoundException, RepositoryException, InvalidQueryException {
         // verify lookup by id
         Node nodeByIdentifier = adminSession.getNodeByIdentifier(id);
-        assertNotNull(nodeByIdentifier);
-        assertEquals(id, nodeByIdentifier.getIdentifier());
+        assertThat(nodeByIdentifier, notNullValue());
+        assertThat(nodeByIdentifier.getIdentifier(), is(id));
 
         // verify lookup by query
         Query query = adminSession.getWorkspace().getQueryManager().createQuery(String.format("SELECT * FROM [nt:base] WHERE [jcr:uuid] = '%s'", id), Query.JCR_SQL2);
         QueryResult execute = query.execute();
         NodeIterator nodes = execute.getNodes();
-        assertTrue(nodes.hasNext());
+        assertThat(nodes.hasNext(), is(true));
         Node nextNode = nodes.nextNode();
-        assertNotNull(nextNode);
-        assertEquals(id, nextNode.getIdentifier());
+        assertThat(nextNode, notNullValue());
+        assertThat(nextNode.getIdentifier(), is(id));
     }
     
 }

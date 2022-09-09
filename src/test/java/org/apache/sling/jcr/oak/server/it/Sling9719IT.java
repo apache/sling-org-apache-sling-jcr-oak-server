@@ -18,8 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import static org.junit.Assert.assertEquals;
-
 import javax.jcr.Node;
 
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -28,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(PaxExam.class)
 public class Sling9719IT extends OakServerTestSupport {
@@ -52,7 +52,7 @@ public class Sling9719IT extends OakServerTestSupport {
         adminSession.save();
         
         // counter initial value is 0. the default value
-        assertEquals(0, counter.getProperty("oak:counter").getLong());
+        assertThat(counter.getProperty("oak:counter").getLong(), is(0L));
 
         // incrementing by 5 the counter
         counter.setProperty("oak:increment", 5);
@@ -62,7 +62,7 @@ public class Sling9719IT extends OakServerTestSupport {
         new Retry(5000) {
             @Override
             protected void exec() throws Exception {
-                assertEquals(5, counter.getProperty("oak:counter").getLong());
+                assertThat(counter.getProperty("oak:counter").getLong(), is(5L));
             }
         };
 
@@ -74,7 +74,7 @@ public class Sling9719IT extends OakServerTestSupport {
         new Retry(5000) {
             @Override
             protected void exec() throws Exception {
-                assertEquals(4, counter.getProperty("oak:counter").getLong());
+                assertThat(counter.getProperty("oak:counter").getLong(), is(4L));
             }
         };
 

@@ -20,7 +20,6 @@ package org.apache.sling.jcr.oak.server.it;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -38,8 +37,6 @@ import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.testing.paxexam.TestSupport;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.options.OptionalCompositeOption;
-import org.ops4j.pax.exam.options.extra.VMOption;
 import org.ops4j.pax.exam.util.PathUtils;
 import org.osgi.framework.BundleContext;
 
@@ -47,13 +44,11 @@ import static org.apache.sling.testing.paxexam.SlingOptions.scr;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingJcr;
 import static org.apache.sling.testing.paxexam.SlingOptions.slingJcrRepoinit;
 import static org.apache.sling.testing.paxexam.SlingOptions.versionResolver;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.vmOption;
-import static org.ops4j.pax.exam.CoreOptions.when;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.factoryConfiguration;
 import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
@@ -141,8 +136,8 @@ public abstract class OakServerTestSupport extends TestSupport {
             session = repository.loginAdministrative(null);
             final String path = relParentPath == null ? "/" + name : "/" + relParentPath + "/" + name;
             final Node n = session.getNode(path);
-            assertNotNull(n);
-            assertEquals(propValue, n.getProperty(propName).getString());
+            assertThat(n, notNullValue());
+            assertThat(propValue, is(n.getProperty(propName).getString()));
             return n.getPath();
         } finally {
             session.logout();
@@ -157,23 +152,13 @@ public abstract class OakServerTestSupport extends TestSupport {
     public Option[] configuration() {
         return new Option[]{
             baseConfiguration(),
-            launchpad(),
+            quickstart(),
             // Sling JCR Oak Server
             testBundle("bundle.filename"),
-            // testing
-            junitBundles(),
-            jacoco() // remove with Testing PaxExam 4.0
         };
     }
 
-    // remove with Testing PaxExam 4.0
-    protected OptionalCompositeOption jacoco() {
-        final String jacocoCommand = System.getProperty("jacoco.command");
-        final VMOption option = Objects.nonNull(jacocoCommand) && !jacocoCommand.trim().isEmpty() ? vmOption(jacocoCommand) : null;
-        return when(Objects.nonNull(option)).useOptions(option);
-    }
-
-    protected Option launchpad() {
+    protected Option quickstart() {
         final String repoinit = String.format("raw:file:%s/src/test/resources/repoinit.txt", PathUtils.getBaseDir());
         final String slingHome = String.format("%s/sling", workingDirectory());
         final String repositoryHome = String.format("%s/repository", slingHome);

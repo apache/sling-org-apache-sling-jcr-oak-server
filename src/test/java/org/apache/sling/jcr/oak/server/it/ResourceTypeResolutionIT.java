@@ -18,10 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 
 import javax.jcr.Node;
@@ -36,6 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(PaxExam.class)
 public class ResourceTypeResolutionIT extends OakServerTestSupport {
@@ -60,19 +59,17 @@ public class ResourceTypeResolutionIT extends OakServerTestSupport {
         authenticationInfo.put(ResourceResolverFactory.USER, "test-user");
         authenticationInfo.put(ResourceResolverFactory.PASSWORD, "test".toCharArray());
 
-        ResourceResolver testResolver = resourceResolverFactory.getResourceResolver(authenticationInfo);
-        try {
+        try (ResourceResolver testResolver = resourceResolverFactory.getResourceResolver(authenticationInfo)) {
             Resource resource = testResolver.getResource("/content/foo/bar");
-            assertNotNull(resource);
-            assertEquals("/content/foo/bar", resource.getPath());
-            assertTrue(resource.isResourceType("types/foo/bar"));
+            assertThat(resource, notNullValue());
+            assertThat(resource.getPath(), is("/content/foo/bar"));
+            assertThat(resource.isResourceType("types/foo/bar"), is(true));
 
             // this assertion causes the private ResourceResolverControl#getResourceTypeResourceResolver
             // to be called, which needs to inject the resourceresolver bundle via the authenticationInfo
             // see SLING-6329
-            assertTrue(resource.isResourceType("types/foo/parent"));
-        } finally {
-            testResolver.close();
+            assertThat(resource.isResourceType("types/foo/parent"), is(true));
         }
+
     }
 }
