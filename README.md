@@ -7,3 +7,13 @@
 This module is part of the [Apache Sling](https://sling.apache.org) project.
 
 This bundle provides a SlingRepository based on Apache Jackrabbit Oak.
+
+
+## Compatibility
+
+When paring the bundles in your installation, these are the version combinations that would be compatible:
+
+| Apache Sling JCR Oak Server | Apache Jackrabbit Oak |
+|---|---|
+| 1.3.0 | 1.8.9 to 1.54.0 |
+| 1.4.0 or later | 1.56.0 or later |
