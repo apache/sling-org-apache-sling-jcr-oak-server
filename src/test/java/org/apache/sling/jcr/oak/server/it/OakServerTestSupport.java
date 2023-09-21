@@ -150,6 +150,30 @@ public abstract class OakServerTestSupport extends TestSupport {
 
     @Configuration
     public Option[] configuration() {
+        // SLING-12035 - bump the oak artifacts to the 1.56.0 version
+        //   remove this block after the versionResolver has these versions or later
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-api", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob-plugins", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-commons", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core-spi", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jackrabbit-api", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jcr", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-lucene", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-query-spi", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-security-spi", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-segment-tar", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-composite", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-document", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-spi", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", "1.56.0");
+        // SLING-12035 - bump the related artifacts to the compatible versions
+        //   remove this block after the versionResolver has these versions or later
+        versionResolver.setVersion("commons-codec", "commons-codec", "1.16.0");
+        versionResolver.setVersion("commons-io", "commons-io", "2.13.0");
+
         return new Option[]{
             baseConfiguration(),
             quickstart(),
@@ -189,6 +213,10 @@ public abstract class OakServerTestSupport extends TestSupport {
                     "org.apache.sling.resourceresolver"
                 })
                 .asOption()
+        ).add(
+            // SLING-12035 - add extra bundle for the shaded version of guava used by the latest oak releases
+            //   remove this block after the SlingOptions#jackrabbitOak includes this artifact
+            mavenBundle().groupId("org.apache.jackrabbit").artifactId("oak-shaded-guava").version(versionResolver)
         );
     }
 
