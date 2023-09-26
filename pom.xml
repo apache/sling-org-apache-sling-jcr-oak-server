@@ -29,7 +29,7 @@
   </parent>
 
   <artifactId>org.apache.sling.jcr.oak.server</artifactId>
-  <version>1.3.1-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
 
   <name>Apache Sling JCR Oak Server</name>
   <description>This bundle provides a SlingRepository based on Apache Jackrabbit Oak.</description>
@@ -44,7 +44,7 @@
   <properties>
     <javadoc.excludePackageNames />
     <jackrabbit.version>2.16.3</jackrabbit.version>
-    <oak.version>1.8.9</oak.version>
+    <oak.version>1.56.0</oak.version>
     <org.ops4j.pax.exam.version>4.13.3</org.ops4j.pax.exam.version>
     <project.build.outputTimestamp>2022-05-12T20:23:08Z</project.build.outputTimestamp>
   </properties>
