@@ -150,29 +150,30 @@ public abstract class OakServerTestSupport extends TestSupport {
 
     @Configuration
     public Option[] configuration() {
-        // SLING-12035 - bump the oak artifacts to the 1.56.0 version
+        String oakVersion = System.getProperty("oak.version", "1.62.0");
+        // SLING-12035 - bump the oak artifacts to the 1.62.0 version
         //   remove this block after the versionResolver has these versions or later
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-api", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob-plugins", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-commons", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-core", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-core-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-jackrabbit-api", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-jcr", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-lucene", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-query-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-security-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-segment-tar", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-composite", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-document", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-api", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob-plugins", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-commons", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core-spi", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jackrabbit-api", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jcr", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-lucene", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-query-spi", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-security-spi", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-segment-tar", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-composite", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-document", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-spi", oakVersion);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", oakVersion);
         // SLING-12035 - bump the related artifacts to the compatible versions
         //   remove this block after the versionResolver has these versions or later
         versionResolver.setVersion("commons-codec", "commons-codec", "1.16.0");
-        versionResolver.setVersion("commons-io", "commons-io", "2.13.0");
+        versionResolver.setVersion("commons-io", "commons-io", "2.15.0");
 
         return new Option[]{
             baseConfiguration(),
