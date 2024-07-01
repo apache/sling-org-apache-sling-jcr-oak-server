@@ -130,7 +130,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     @Override
     protected Repository acquireRepository() {
         final BundleContext bundleContext = componentContext.getBundleContext();
-        final Whiteboard whiteboard = new OsgiWhiteboard(bundleContext);
+        final Whiteboard whiteboard = new WithMBeanRegistration(new OsgiWhiteboard(bundleContext));
         this.initializers = whiteboard.track(RepositoryInitializer.class);
         this.editorProvider.start(whiteboard);
         this.indexProvider.start(whiteboard);
