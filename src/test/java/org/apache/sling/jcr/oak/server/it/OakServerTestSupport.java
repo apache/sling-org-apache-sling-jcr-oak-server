@@ -150,8 +150,7 @@ public abstract class OakServerTestSupport extends TestSupport {
 
     @Configuration
     public Option[] configuration() {
-        String oakVersion = System.getProperty("oak.version", "1.62.0");
-        // SLING-12035 - bump the oak artifacts to the 1.62.0 version
+        String oakVersion = System.getProperty("oak.version", "1.70.0");
         //   remove this block after the versionResolver has these versions or later
         versionResolver.setVersion("org.apache.jackrabbit", "oak-api", oakVersion);
         versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", oakVersion);
@@ -172,8 +171,8 @@ public abstract class OakServerTestSupport extends TestSupport {
         versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", oakVersion);
         // SLING-12035 - bump the related artifacts to the compatible versions
         //   remove this block after the versionResolver has these versions or later
-        versionResolver.setVersion("commons-codec", "commons-codec", "1.16.0");
-        versionResolver.setVersion("commons-io", "commons-io", "2.15.0");
+        versionResolver.setVersion("commons-codec", "commons-codec", "1.17.0");
+        versionResolver.setVersion("commons-io", "commons-io", "2.16.0");
 
         return new Option[]{
             baseConfiguration(),

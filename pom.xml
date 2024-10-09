@@ -44,7 +44,7 @@
   <properties>
     <javadoc.excludePackageNames />
     <jackrabbit.version>2.16.3</jackrabbit.version>
-    <oak.version>1.62.0</oak.version>
+    <oak.version>1.70.0</oak.version>
     <org.ops4j.pax.exam.version>4.13.3</org.ops4j.pax.exam.version>
     <project.build.outputTimestamp>2023-10-09T22:21:44Z</project.build.outputTimestamp>
   </properties>
