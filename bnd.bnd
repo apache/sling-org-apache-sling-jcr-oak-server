@@ -1,3 +1,4 @@
+# org.apache.jackrabbit.oak.spi.query - import range is safe since OAK-10849 and OAK-10768 do not affect us
 Import-Package:\
   com.mongodb;resolution:=optional,\
   org.apache.felix.jaas.boot,\
@@ -6,6 +7,7 @@ Import-Package:\
   org.apache.jackrabbit.oak.spi.security.authentication,\
   org.apache.jackrabbit.oak.spi.security.principal;version="[1.5,3)",\
   org.apache.jackrabbit.test;resolution:=optional,\
+  org.apache.jackrabbit.oak.spi.query;version="[1.7,4)", \
   *
 
 Provide-Capability:\
