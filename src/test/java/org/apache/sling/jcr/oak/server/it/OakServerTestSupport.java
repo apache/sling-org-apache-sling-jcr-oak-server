@@ -177,6 +177,8 @@ public abstract class OakServerTestSupport extends TestSupport {
         return new Option[]{
             baseConfiguration(),
             quickstart(),
+            mavenBundle("org.apache.jackrabbit", "oak-lucene", "1.56.0"), // needed for LuceneIndexHelper
+            mavenBundle("org.apache.jackrabbit", "oak-store-document", "1.56.0"), // needed by oak-lucene
             // Sling JCR Oak Server
             testBundle("bundle.filename"),
         };
