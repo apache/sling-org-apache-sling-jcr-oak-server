@@ -16,4 +16,4 @@ When paring the bundles in your installation, these are the version combinations
 | Apache Sling JCR Oak Server | Apache Jackrabbit Oak |
 |---|---|
 | 1.3.0 | 1.8.9 to 1.54.0 |
-| 1.4.0 or later | 1.56.0 or later |
+| 1.4.0 | 1.56.0 to 1.60.0 |
