@@ -29,8 +29,29 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
     @AttributeDefinition(
         name = "Index Name",
-        description = "The name of the index which is used while logging."
+        description = "The name of the index."
     )
     String name() default "lucene";
+
+    @AttributeDefinition(
+        name = "Include Property Types",
+        description = "Property types which should be indexed."
+    )
+    String[] includePropertyTypes() default {
+        "String",
+        "Binary"
+    };
+
+    @AttributeDefinition(
+        name = "Exclude Property Names",
+        description = "Properties which should not be indexed."
+    )
+    String[] excludePropertyNames() default {
+        "jcr:createdBy",
+        "jcr:lastModifiedBy",
+        "sling:alias",
+        "sling:resourceType",
+        "sling:vanityPath"
+    };
 
 }

@@ -20,7 +20,6 @@ package org.apache.sling.jcr.oak.server.internal;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.jackrabbit.oak.plugins.index.lucene.util.LuceneIndexHelper;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
@@ -49,16 +48,6 @@ public class LuceneIndexRepositoryInitializer implements RepositoryInitializer {
 
     private LuceneIndexRepositoryInitializerConfiguration configuration;
 
-    private static final Set<String> LUCENE_INDEX_EXCLUDES = new HashSet<>(
-        Arrays.asList(
-            "jcr:createdBy",
-            "jcr:lastModifiedBy",
-            "sling:alias",
-            "sling:resourceType",
-            "sling:vanityPath"
-        )
-    );
-
     private final Logger logger = LoggerFactory.getLogger(LuceneIndexRepositoryInitializer.class);
 
     @Activate
@@ -73,13 +62,13 @@ public class LuceneIndexRepositoryInitializer implements RepositoryInitializer {
         if (root.hasChildNode(INDEX_DEFINITIONS_NAME)) {
             final NodeBuilder index = root.child(INDEX_DEFINITIONS_NAME);
             // lucene full-text index
-            if (!index.hasChildNode("lucene")) {
+            if (!index.hasChildNode(configuration.name())) {
                 logger.debug("adding new Lucene index definition");
                 LuceneIndexHelper.newLuceneIndexDefinition(
                     index,
                     configuration.name(),
-                    LuceneIndexHelper.JR_PROPERTY_INCLUDES,
-                    LUCENE_INDEX_EXCLUDES,
+                    new HashSet<>(Arrays.asList(configuration.includePropertyTypes())),
+                    new HashSet<>(Arrays.asList(configuration.excludePropertyNames())),
                     "async"
                 );
             }
