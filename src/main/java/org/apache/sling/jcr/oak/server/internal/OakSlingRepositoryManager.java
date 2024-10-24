@@ -18,11 +18,8 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.jcr.Repository;
 
@@ -35,7 +32,6 @@ import org.apache.jackrabbit.oak.osgi.OsgiWhiteboard;
 import org.apache.jackrabbit.oak.plugins.commit.JcrConflictHandler;
 import org.apache.jackrabbit.oak.plugins.index.WhiteboardIndexEditorProvider;
 import org.apache.jackrabbit.oak.plugins.index.aggregate.SimpleNodeAggregator;
-import org.apache.jackrabbit.oak.plugins.index.lucene.util.LuceneIndexHelper;
 import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
 import org.apache.jackrabbit.oak.plugins.version.VersionHook;
 import org.apache.jackrabbit.oak.spi.commit.WhiteboardEditorProvider;
@@ -83,16 +79,6 @@ import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefi
     ocd = OakSlingRepositoryManagerConfiguration.class
 )
 public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
-
-    private static final Set<String> LUCENE_INDEX_EXCLUDES = new HashSet<>(
-        Arrays.asList(
-            "jcr:createdBy",
-            "jcr:lastModifiedBy",
-            "sling:alias",
-            "sling:resourceType",
-            "sling:vanityPath"
-        )
-    );
 
     @Reference
     private ServiceUserMapper serviceUserMapper;
@@ -249,18 +235,6 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
                 property(index, "lockCreated", "lock.created");
                 property(index, "status", "status");
                 property(index, "type", "type");
-
-                // lucene full-text index
-                if (!index.hasChildNode("lucene")) {
-                    LuceneIndexHelper.newLuceneIndexDefinition(
-                        index,
-                        "lucene",
-                        LuceneIndexHelper.JR_PROPERTY_INCLUDES,
-                        LUCENE_INDEX_EXCLUDES,
-                        "async"
-                    );
-                }
-
             }
         }
 

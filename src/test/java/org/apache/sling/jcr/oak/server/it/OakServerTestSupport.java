@@ -54,6 +54,8 @@ import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
 public abstract class OakServerTestSupport extends TestSupport {
 
+    static final String OAK_VERSION = "1.56.0";
+
     @Inject
     protected SlingRepository slingRepository;
 
@@ -152,23 +154,23 @@ public abstract class OakServerTestSupport extends TestSupport {
     public Option[] configuration() {
         // SLING-12035 - bump the oak artifacts to the 1.56.0 version
         //   remove this block after the versionResolver has these versions or later
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-api", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob-plugins", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-commons", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-core", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-core-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-jackrabbit-api", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-jcr", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-lucene", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-query-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-security-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-segment-tar", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-composite", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-document", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-spi", "1.56.0");
-        versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", "1.56.0");
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-api", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-authorization-principalbased", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-blob-plugins", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-commons", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-core-spi", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jackrabbit-api", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-jcr", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-lucene", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-query-spi", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-security-spi", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-segment-tar", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-composite", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-document", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-store-spi", OAK_VERSION);
+        versionResolver.setVersion("org.apache.jackrabbit", "oak-shaded-guava", OAK_VERSION);
         // SLING-12035 - bump the related artifacts to the compatible versions
         //   remove this block after the versionResolver has these versions or later
         versionResolver.setVersion("commons-codec", "commons-codec", "1.16.0");
@@ -177,8 +179,6 @@ public abstract class OakServerTestSupport extends TestSupport {
         return new Option[]{
             baseConfiguration(),
             quickstart(),
-            mavenBundle("org.apache.jackrabbit", "oak-lucene", "1.56.0"), // needed for LuceneIndexHelper
-            mavenBundle("org.apache.jackrabbit", "oak-store-document", "1.56.0"), // needed by oak-lucene
             // Sling JCR Oak Server
             testBundle("bundle.filename"),
         };
