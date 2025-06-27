@@ -27,6 +27,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.InitialContent;
 import org.apache.jackrabbit.oak.Oak;
+import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.osgi.OsgiWhiteboard;
 import org.apache.jackrabbit.oak.plugins.commit.JcrConflictHandler;
@@ -107,6 +108,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     private SecurityProvider securityProvider;
 
     private ServiceRegistration<NodeAggregator> nodeAggregatorRegistration;
+    private ServiceRegistration<ContentRepository> contentRepositoryRegistration;
 
     @Override
     protected ServiceUserMapper getServiceUserMapper() {
@@ -148,7 +150,8 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             jcr.with(commitRateLimiter);
         }
 
-        jcr.createContentRepository();
+        ContentRepository contentRepository = jcr.createContentRepository();
+        contentRepositoryRegistration = bundleContext.registerService(ContentRepository.class, contentRepository, null);
 
         return new TcclWrappingJackrabbitRepository((JackrabbitRepository) jcr.createRepository());
     }
@@ -200,6 +203,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         super.stop();
         this.componentContext = null;
         this.nodeAggregatorRegistration.unregister();
+        this.contentRepositoryRegistration.unregister();
     }
 
     private String getAdminId() {

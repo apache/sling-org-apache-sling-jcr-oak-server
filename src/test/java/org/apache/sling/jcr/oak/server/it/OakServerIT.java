@@ -34,6 +34,7 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.query.Query;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.sling.api.SlingConstants;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 @RunWith(PaxExam.class)
@@ -337,6 +340,14 @@ public class OakServerIT extends OakServerTestSupport {
         }
 
         log.info("Running on Oak version {}", repository.getDescriptor("jcr.repository.version"));
+    }
+
+    @Test
+    public void testContentRepositoryRegistration() {
+        ServiceReference<ContentRepository> serviceReference = bundleContext.getServiceReference(
+                ContentRepository.class
+        );
+        assertNotNull("Content Repository service must be registered", serviceReference);
     }
 
 }
