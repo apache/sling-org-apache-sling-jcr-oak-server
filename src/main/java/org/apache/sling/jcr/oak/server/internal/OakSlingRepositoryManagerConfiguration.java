@@ -22,55 +22,49 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(
-    name = "Apache Sling JCR Oak Repository",
-    description = "Configuration to launch an embedded JCR Repository and provide it as a SlingRepository and a standard JCR Repository. In addition, if the registration URL is not empty, the repository is registered as defined."
-)
+        name = "Apache Sling JCR Oak Repository",
+        description =
+                "Configuration to launch an embedded JCR Repository and provide it as a SlingRepository and a standard JCR Repository. In addition, if the registration URL is not empty, the repository is registered as defined.")
 @interface OakSlingRepositoryManagerConfiguration {
 
     @AttributeDefinition(
-        name = "Repository Name",
-        description = "The name under which the repository will be registered in JNDI and RMI registries."
-    )
+            name = "Repository Name",
+            description = "The name under which the repository will be registered in JNDI and RMI registries.")
     String name() default "oak-sling-repository";
 
     @AttributeDefinition(
-        name = "Default Workspace",
-        description = "Name of the workspace to use by default if not is given in any of the login methods. This name is used "
-            + "to implement the SlingRepository.getDefaultWorkspace() "
-            + "method. If this name is empty, a null value is used in "
-            + "JCR calls so that the default workspace provided by the JCR repository is used."
-    )
+            name = "Default Workspace",
+            description =
+                    "Name of the workspace to use by default if not is given in any of the login methods. This name is used "
+                            + "to implement the SlingRepository.getDefaultWorkspace() "
+                            + "method. If this name is empty, a null value is used in "
+                            + "JCR calls so that the default workspace provided by the JCR repository is used.")
     String defaultWorkspace() default "default";
 
     // For backwards compatibility loginAdministrative is still enabled
     // In future releases, this default may change to false.
     @AttributeDefinition(
-        name = "Enable Administrator Login",
-        description = "Whether to enable or disable the SlingRepository.loginAdministrative "
-            + "method. The default is 'true'. See "
-            + "http://sling.apache.org/documentation/the-sling-engine/service-authentication.html "
-            + "for information on deprecating and disabling the loginAdministrative method."
-    )
+            name = "Enable Administrator Login",
+            description = "Whether to enable or disable the SlingRepository.loginAdministrative "
+                    + "method. The default is 'true'. See "
+                    + "http://sling.apache.org/documentation/the-sling-engine/service-authentication.html "
+                    + "for information on deprecating and disabling the loginAdministrative method.")
     boolean admin_login_enabled() default true;
 
     @AttributeDefinition(
-        name = "Observation queue length",
-        description = "Maximum number of pending revisions in a observation listener queue"
-    )
+            name = "Observation queue length",
+            description = "Maximum number of pending revisions in a observation listener queue")
     int oak_observation_queue_length() default 1000;
 
     @AttributeDefinition(
-        name = "Commit rate limiter",
-        description = "Limit the commit rate once the number of pending revisions in the observation "
-            + "queue exceed 90% of its capacity."
-    )
+            name = "Commit rate limiter",
+            description = "Limit the commit rate once the number of pending revisions in the observation "
+                    + "queue exceed 90% of its capacity.")
     boolean oak_observation_limitCommitRate() default false;
 
-    
     @AttributeDefinition(
-        name = "Fast query result size",
-        description = "Whether the query result size should return an estimation (or -1 if disabled) for large queries"
-    )
+            name = "Fast query result size",
+            description =
+                    "Whether the query result size should return an estimation (or -1 if disabled) for large queries")
     boolean oak_query_fastResultSize() default true;
-
 }

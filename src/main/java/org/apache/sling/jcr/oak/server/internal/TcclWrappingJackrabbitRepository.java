@@ -18,14 +18,14 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import java.util.Map;
-
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+
+import java.util.Map;
 
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -79,7 +79,7 @@ public class TcclWrappingJackrabbitRepository implements JackrabbitRepository {
         thread.setContextClassLoader(Oak.class.getClassLoader());
 
         try {
-            Session session = wrapped.login(credentials, workspaceName,attributes);
+            Session session = wrapped.login(credentials, workspaceName, attributes);
             return new TcclWrappingJackrabbitSession((JackrabbitSession) session);
         } finally {
             thread.setContextClassLoader(oldClassLoader);
@@ -121,7 +121,5 @@ public class TcclWrappingJackrabbitRepository implements JackrabbitRepository {
     @Override
     public void shutdown() {
         wrapped.shutdown();
-
     }
-
 }

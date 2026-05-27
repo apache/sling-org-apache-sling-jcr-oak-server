@@ -32,25 +32,25 @@ import static org.hamcrest.Matchers.is;
 @RunWith(PaxExam.class)
 public class Sling9719IT extends OakServerTestSupport {
 
-	/**
-	 * SLING-9719 - test that the dynamic Atomic Counter EditorProvider was discovered and is 
-	 * active and functioning
-	 */
+    /**
+     * SLING-9719 - test that the dynamic Atomic Counter EditorProvider was discovered and is
+     * active and functioning
+     */
     @Test
     public void checkAtomicCounter() throws Exception {
-        JackrabbitSession adminSession = (JackrabbitSession)slingRepository.loginAdministrative(null);
-                
+        JackrabbitSession adminSession = (JackrabbitSession) slingRepository.loginAdministrative(null);
+
         Node counter = JcrUtils.getOrCreateByPath("/content/sling9719/counter", "nt:unstructured", adminSession);
         if (!counter.isNodeType("mix:atomicCounter")) {
-        	counter.addMixin("mix:atomicCounter");
+            counter.addMixin("mix:atomicCounter");
         }
         if (!counter.isNew()) {
-        	// reset the property back to the default value
-        	counter.setProperty("oak:counter", 0L);
+            // reset the property back to the default value
+            counter.setProperty("oak:counter", 0L);
         }
 
         adminSession.save();
-        
+
         // counter initial value is 0. the default value
         assertThat(counter.getProperty("oak:counter").getLong(), is(0L));
 
