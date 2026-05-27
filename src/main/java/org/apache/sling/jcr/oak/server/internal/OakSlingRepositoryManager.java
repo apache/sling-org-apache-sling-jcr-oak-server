@@ -18,10 +18,10 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
+import javax.jcr.Repository;
+
 import java.util.Collections;
 import java.util.Dictionary;
-
-import javax.jcr.Repository;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -67,18 +67,15 @@ import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFIN
 import static org.apache.jackrabbit.oak.plugins.index.IndexUtils.createIndexDefinition;
 
 /**
- * A Sling repository implementation that wraps the Oak repository
- * implementation from the Jackrabbit Oak project.
+ * A Sling repository implementation that wraps the Oak repository implementation from the
+ * Jackrabbit Oak project.
  */
 @Component(
-    property = {
-        Constants.SERVICE_DESCRIPTION + "=Apache Sling JCR Oak Repository Manager",
-        Constants.SERVICE_VENDOR + "=The Apache Software Foundation"
-    }
-)
-@Designate(
-    ocd = OakSlingRepositoryManagerConfiguration.class
-)
+        property = {
+            Constants.SERVICE_DESCRIPTION + "=Apache Sling JCR Oak Repository Manager",
+            Constants.SERVICE_VENDOR + "=The Apache Software Foundation"
+        })
+@Designate(ocd = OakSlingRepositoryManagerConfiguration.class)
 public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     @Reference
@@ -90,7 +87,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     private ComponentContext componentContext;
 
     private final WhiteboardEditorProvider editorProvider = new WhiteboardEditorProvider();
-    
+
     private final WhiteboardIndexProvider indexProvider = new WhiteboardIndexProvider();
 
     private final WhiteboardIndexEditorProvider indexEditorProvider = new WhiteboardIndexEditorProvider();
@@ -101,10 +98,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     private OakSlingRepositoryManagerConfiguration configuration;
 
-    @Reference(
-        policy = ReferencePolicy.STATIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
+    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
     private SecurityProvider securityProvider;
 
     private ServiceRegistration<NodeAggregator> nodeAggregatorRegistration;
@@ -124,28 +118,27 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         this.indexProvider.start(whiteboard);
         this.indexEditorProvider.start(whiteboard);
 
-        final Oak oak = new Oak(nodeStore)
-            .withAsyncIndexing("async", 5);
+        final Oak oak = new Oak(nodeStore).withAsyncIndexing("async", 5);
 
         final Jcr jcr = new Jcr(oak, false)
-            .with(new InitialContent())
-            .with(new ExtraSlingContent())
-            .with(JcrConflictHandler.createJcrConflictHandler())
-            .with(new VersionHook())
-            .with(whiteboard)
-            .with(securityProvider)
-            .with(editorProvider)
-            // index stuff
-            .with(indexProvider)
-            .with(indexEditorProvider)
-            .with(getDefaultWorkspace())
-            .withFastQueryResultSize(configuration.oak_query_fastResultSize())
-            .withObservationQueueLength(configuration.oak_observation_queue_length());
-        
-        for (RepositoryInitializer initializer : initializers.getServices()){
+                .with(new InitialContent())
+                .with(new ExtraSlingContent())
+                .with(JcrConflictHandler.createJcrConflictHandler())
+                .with(new VersionHook())
+                .with(whiteboard)
+                .with(securityProvider)
+                .with(editorProvider)
+                // index stuff
+                .with(indexProvider)
+                .with(indexEditorProvider)
+                .with(getDefaultWorkspace())
+                .withFastQueryResultSize(configuration.oak_query_fastResultSize())
+                .withObservationQueueLength(configuration.oak_observation_queue_length());
+
+        for (RepositoryInitializer initializer : initializers.getServices()) {
             jcr.with(initializer);
         }
-        
+
         if (commitRateLimiter != null) {
             jcr.with(commitRateLimiter);
         }
@@ -174,7 +167,7 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
 
     @Override
     protected void disposeRepository(Repository repository) {
-        this.initializers.stop();    	
+        this.initializers.stop();
         this.indexProvider.stop();
         this.indexEditorProvider.stop();
         this.editorProvider.stop();
@@ -182,7 +175,8 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     }
 
     @Activate
-    private void activate(final OakSlingRepositoryManagerConfiguration configuration, final ComponentContext componentContext) {
+    private void activate(
+            final OakSlingRepositoryManagerConfiguration configuration, final ComponentContext componentContext) {
         this.configuration = configuration;
         this.componentContext = componentContext;
         final BundleContext bundleContext = componentContext.getBundleContext();
@@ -193,7 +187,8 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
         if (configuration.oak_observation_limitCommitRate()) {
             commitRateLimiter = new CommitRateLimiter();
         }
-        this.nodeAggregatorRegistration = bundleContext.registerService(NodeAggregator.class, getNodeAggregator(), null);
+        this.nodeAggregatorRegistration =
+                bundleContext.registerService(NodeAggregator.class, getNodeAggregator(), null);
 
         super.start(bundleContext, new Config(defaultWorkspace, disableLoginAdministrative));
     }
@@ -207,15 +202,18 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
     }
 
     private String getAdminId() {
-        return securityProvider.getConfiguration(UserConfiguration.class).getParameters().getConfigValue(UserConstants.PARAM_ADMIN_ID, UserConstants.DEFAULT_ADMIN_ID);
+        return securityProvider
+                .getConfiguration(UserConfiguration.class)
+                .getParameters()
+                .getConfigValue(UserConstants.PARAM_ADMIN_ID, UserConstants.DEFAULT_ADMIN_ID);
     }
 
     private static NodeAggregator getNodeAggregator() {
-        return new SimpleNodeAggregator().newRuleWithName(JcrConstants.NT_FILE, Collections.singletonList(JcrConstants.JCR_CONTENT));
+        return new SimpleNodeAggregator()
+                .newRuleWithName(JcrConstants.NT_FILE, Collections.singletonList(JcrConstants.JCR_CONTENT));
     }
 
     private static final class ExtraSlingContent implements RepositoryInitializer {
-
 
         @Override
         public void initialize(NodeBuilder root) {
@@ -242,15 +240,11 @@ public class OakSlingRepositoryManager extends AbstractSlingRepositoryManager {
             }
         }
 
-        /**
-         * A convenience method to create a non-unique property index.
-         */
+        /** A convenience method to create a non-unique property index. */
         private static void property(NodeBuilder index, String indexName, String propertyName) {
             if (!index.hasChildNode(indexName)) {
                 createIndexDefinition(index, indexName, true, false, singleton(propertyName), null);
             }
         }
-
     }
-
 }

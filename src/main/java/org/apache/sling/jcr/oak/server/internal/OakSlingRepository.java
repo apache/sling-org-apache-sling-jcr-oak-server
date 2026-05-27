@@ -18,6 +18,10 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.security.auth.Subject;
+
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
@@ -25,10 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.security.auth.Subject;
 
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.api.AuthInfo;
@@ -44,8 +44,8 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 
 /**
- * A Sling repository implementation that wraps the Oak OSGi repository
- * implementation from the Oak project.
+ * A Sling repository implementation that wraps the Oak OSGi repository implementation from the Oak
+ * project.
  */
 public class OakSlingRepository extends AbstractSlingRepository2 {
 
@@ -53,10 +53,11 @@ public class OakSlingRepository extends AbstractSlingRepository2 {
         Iterator<String> iterator = servicePrincipalNames.iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
-    
+
     private final String adminId;
 
-    protected OakSlingRepository(final AbstractSlingRepositoryManager manager, final Bundle usingBundle, final String adminId) {
+    protected OakSlingRepository(
+            final AbstractSlingRepositoryManager manager, final Bundle usingBundle, final String adminId) {
         super(manager, usingBundle);
         this.adminId = adminId;
     }
@@ -68,15 +69,18 @@ public class OakSlingRepository extends AbstractSlingRepository2 {
         AuthInfo authInfo = new AuthInfoImpl(this.adminId, emptyMap(), principals);
         Subject subject = new Subject(true, principals, singleton(authInfo), emptySet());
         try {
-            return Subject.doAsPrivileged(subject, new PrivilegedExceptionAction<Session>() {
-                @Override
-                public Session run() throws Exception {
-                    Map<String, Object> attrs = new HashMap<String, Object>();
-                    attrs.put("oak.refresh-interval", 0);
-                    // TODO OAK-803: Backwards compatibility of long-lived sessions
-                    return getJackrabbitRepository().login(null, null, attrs);
-                }
-            }, null);
+            return Subject.doAsPrivileged(
+                    subject,
+                    new PrivilegedExceptionAction<Session>() {
+                        @Override
+                        public Session run() throws Exception {
+                            Map<String, Object> attrs = new HashMap<String, Object>();
+                            attrs.put("oak.refresh-interval", 0);
+                            // TODO OAK-803: Backwards compatibility of long-lived sessions
+                            return getJackrabbitRepository().login(null, null, attrs);
+                        }
+                    },
+                    null);
         } catch (PrivilegedActionException e) {
             throw new RepositoryException("failed to retrieve admin session.", e);
         }
@@ -86,19 +90,22 @@ public class OakSlingRepository extends AbstractSlingRepository2 {
     protected Session createServiceSession(Iterable<String> servicePrincipalNames, String workspaceName)
             throws RepositoryException {
         Set<SystemUserPrincipal> principals = new HashSet<>();
-        for (final String pName : servicePrincipalNames)
-            principals.add(() -> pName);
+        for (final String pName : servicePrincipalNames) principals.add(() -> pName);
 
-        // make sure to retain the first user id from the passed in servicePrincipalNames, for consistency
+        // make sure to retain the first user id from the passed in servicePrincipalNames, for
+        // consistency
         AuthInfo authInfo = new AuthInfoImpl(first(servicePrincipalNames), emptyMap(), principals);
         Subject subject = new Subject(true, principals, singleton(authInfo), emptySet());
         try {
-            return Subject.doAsPrivileged(subject, new PrivilegedExceptionAction<Session>() {
-                @Override
-                public Session run() throws Exception {
-                    return getRepository().login(null, workspaceName);
-                }
-            }, null);
+            return Subject.doAsPrivileged(
+                    subject,
+                    new PrivilegedExceptionAction<Session>() {
+                        @Override
+                        public Session run() throws Exception {
+                            return getRepository().login(null, workspaceName);
+                        }
+                    },
+                    null);
         } catch (PrivilegedActionException e) {
             throw new RepositoryException("failed to retrieve service session.", e);
         }

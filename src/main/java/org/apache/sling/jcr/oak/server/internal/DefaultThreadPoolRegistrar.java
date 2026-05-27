@@ -30,9 +30,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(
-    immediate = true
-)
+@Component(immediate = true)
 public class DefaultThreadPoolRegistrar {
 
     @Reference
@@ -42,8 +40,7 @@ public class DefaultThreadPoolRegistrar {
 
     private ServiceRegistration<ThreadPool> serviceRegistration;
 
-    public DefaultThreadPoolRegistrar() {
-    }
+    public DefaultThreadPoolRegistrar() {}
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -62,5 +59,4 @@ public class DefaultThreadPoolRegistrar {
         threadPoolManager.release(threadPool);
         threadPool = null;
     }
-
 }

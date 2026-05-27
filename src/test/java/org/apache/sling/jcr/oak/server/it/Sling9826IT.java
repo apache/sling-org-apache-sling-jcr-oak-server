@@ -45,12 +45,13 @@ public class Sling9826IT extends OakServerTestSupport {
     private String testFolderPath;
     private String temp1Path;
     private String temp2Path;
-    
+
     @Before
     public void setup() throws RepositoryException {
-        adminSession = (JackrabbitSession)slingRepository.loginAdministrative(null);
-        
-        Node testFolder = JcrUtils.getOrCreateByPath("/content/sling9826", true, "sling:Folder", "sling:Folder", adminSession, false);
+        adminSession = (JackrabbitSession) slingRepository.loginAdministrative(null);
+
+        Node testFolder = JcrUtils.getOrCreateByPath(
+                "/content/sling9826", true, "sling:Folder", "sling:Folder", adminSession, false);
         testFolderPath = testFolder.getPath();
         Node temp1Node = JcrUtils.getOrCreateByPath(testFolder, "temp1", true, "sling:Folder", "sling:Folder", false);
         temp1Path = temp1Node.getPath();
@@ -60,7 +61,7 @@ public class Sling9826IT extends OakServerTestSupport {
             adminSession.save();
         }
     }
-    
+
     @After
     public void teardown() throws RepositoryException {
         if (adminSession != null) {
@@ -69,11 +70,11 @@ public class Sling9826IT extends OakServerTestSupport {
             if (testFolderPath != null && adminSession.itemExists(testFolderPath)) {
                 adminSession.getItem(testFolderPath).remove();
             }
-            
+
             if (adminSession.hasPendingChanges()) {
                 adminSession.save();
             }
-            
+
             adminSession.logout();
         }
         adminSession = null;
@@ -81,10 +82,8 @@ public class Sling9826IT extends OakServerTestSupport {
         temp2Path = null;
         testFolderPath = null;
     }
-    
-    /**
-     * SLING-9826 - test that jcr:uuid index is updated on move
-     */
+
+    /** SLING-9826 - test that jcr:uuid index is updated on move */
     @Test
     public void checkUuidIndexUpdatedOnMove() throws Exception {
         // create the node to move
@@ -93,8 +92,8 @@ public class Sling9826IT extends OakServerTestSupport {
         Node child = parent.addNode(childName, "sling:Folder");
         child.addMixin("mix:referenceable");
         adminSession.save();
-        
-        // verify the id and lookup by id and query works 
+
+        // verify the id and lookup by id and query works
         String id = child.getIdentifier();
         assertThat(adminSession.getNodeByIdentifier(id), notNullValue());
         verifyLookupByIdentifier(id);
@@ -102,8 +101,8 @@ public class Sling9826IT extends OakServerTestSupport {
         // move it
         adminSession.move(child.getPath(), temp2Path + childName);
         adminSession.save();
-        
-        // verify the id and lookup by id and query works 
+
+        // verify the id and lookup by id and query works
         verifyLookupByIdentifier(id);
     }
 
@@ -115,7 +114,10 @@ public class Sling9826IT extends OakServerTestSupport {
         assertThat(nodeByIdentifier.getIdentifier(), is(id));
 
         // verify lookup by query
-        Query query = adminSession.getWorkspace().getQueryManager().createQuery(String.format("SELECT * FROM [nt:base] WHERE [jcr:uuid] = '%s'", id), Query.JCR_SQL2);
+        Query query = adminSession
+                .getWorkspace()
+                .getQueryManager()
+                .createQuery(String.format("SELECT * FROM [nt:base] WHERE [jcr:uuid] = '%s'", id), Query.JCR_SQL2);
         QueryResult execute = query.execute();
         NodeIterator nodes = execute.getNodes();
         assertThat(nodes.hasNext(), is(true));
@@ -123,5 +125,4 @@ public class Sling9826IT extends OakServerTestSupport {
         assertThat(nextNode, notNullValue());
         assertThat(nextNode.getIdentifier(), is(id));
     }
-    
 }

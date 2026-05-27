@@ -18,12 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -32,6 +26,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.query.Query;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.oak.api.ContentRepository;
@@ -78,7 +78,7 @@ public class OakServerIT extends OakServerTestSupport {
         repository.login(creds).logout();
     }
 
-    @Test(expected=RepositoryException.class)
+    @Test(expected = RepositoryException.class)
     public void testWrongLogin() throws RepositoryException {
         final Credentials creds = new SimpleCredentials("badName", "badPAssword".toCharArray());
         repository.login(creds);
@@ -115,7 +115,10 @@ public class OakServerIT extends OakServerTestSupport {
         try {
             assertThat("Expecting anonymous to see " + path, s.itemExists(path), is(true));
             final Node n = s.getNode(path);
-            assertThat("Expecting anonymous to see the foo property", path, is(n.getProperty("foo").getString()));
+            assertThat(
+                    "Expecting anonymous to see the foo property",
+                    path,
+                    is(n.getProperty("foo").getString()));
         } finally {
             s.logout();
         }
@@ -135,7 +138,7 @@ public class OakServerIT extends OakServerTestSupport {
         final String value = "VALUE_" + id;
         try {
             final int N_NODES = 100;
-            for(int i=0 ; i < N_NODES; i++) {
+            for (int i = 0; i < N_NODES; i++) {
                 final Node root = s.getRootNode();
                 root.addNode(id + i).setProperty(propName, value);
             }
@@ -148,7 +151,7 @@ public class OakServerIT extends OakServerTestSupport {
 
             final NodeIterator it = q.execute().getNodes();
             int count = 0;
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 it.next();
                 count++;
             }
@@ -174,8 +177,8 @@ public class OakServerIT extends OakServerTestSupport {
             final NodeIterator it = q.execute().getNodes();
             assertThat("Expecting a non-empty result", it.hasNext(), is(true));
             boolean found = false;
-            while(it.hasNext()) {
-                if(it.nextNode().getPath().equals(absPath)) {
+            while (it.hasNext()) {
+                if (it.nextNode().getPath().equals(absPath)) {
                     found = true;
                     break;
                 }
@@ -198,7 +201,6 @@ public class OakServerIT extends OakServerTestSupport {
         } finally {
             s.logout();
         }
-
     }
 
     @Test
@@ -207,12 +209,12 @@ public class OakServerIT extends OakServerTestSupport {
         try {
             final String path = getClass().getSimpleName() + System.currentTimeMillis();
             final Node child = deleteAfterTests(s.getRootNode().addNode(path));
-            final Property p = child.setProperty("foo", new String[] { "bar", "wii " });
+            final Property p = child.setProperty("foo", new String[] {"bar", "wii "});
             s.save();
             try {
                 p.getBinary().getStream();
                 fail("Expecting getStream() to fail on a multi-value Property");
-            } catch(RepositoryException asExpected) {
+            } catch (RepositoryException asExpected) {
             }
         } finally {
             s.logout();
@@ -222,7 +224,8 @@ public class OakServerIT extends OakServerTestSupport {
     @Test
     public void testOsgiResourceEvents() throws RepositoryException {
         final ResourceEventListener listener = new ResourceEventListener();
-        final ServiceRegistration<EventHandler> reg = listener.register(bundleContext, SlingConstants.TOPIC_RESOURCE_ADDED);
+        final ServiceRegistration<EventHandler> reg =
+                listener.register(bundleContext, SlingConstants.TOPIC_RESOURCE_ADDED);
         final Session s = repository.loginAdministrative(null);
         final int nPaths = 2500 * TEST_SCALE;
         final int timeoutMsec = 2 * nPaths;
@@ -232,7 +235,7 @@ public class OakServerIT extends OakServerTestSupport {
         // and verify that ResourceEventListener gets an event
         // for each of them
         try {
-            for(int i=0; i  < nPaths; i++) {
+            for (int i = 0; i < nPaths; i++) {
                 s.getRootNode().addNode(prefix + i);
             }
             s.save();
@@ -240,26 +243,31 @@ public class OakServerIT extends OakServerTestSupport {
             log.info("Added {} nodes, checking what ResourceEventListener got...", nPaths);
             final long timeout = System.currentTimeMillis() + timeoutMsec;
             final Set<String> missing = new HashSet<String>();
-            while(System.currentTimeMillis() < timeout) {
+            while (System.currentTimeMillis() < timeout) {
                 missing.clear();
                 final Set<String> paths = listener.getPaths();
-                for(int i=0; i  < nPaths; i++) {
+                for (int i = 0; i < nPaths; i++) {
                     final String path = "/" + prefix + i;
-                    if(!paths.contains(path)) {
+                    if (!paths.contains(path)) {
                         missing.add(path);
                     }
                 }
 
-                if(missing.isEmpty()) {
+                if (missing.isEmpty()) {
                     break;
                 }
             }
 
-            if(!missing.isEmpty()) {
+            if (!missing.isEmpty()) {
                 final String missingStr = missing.size() > 10 ? missing.size() + " paths missing" : missing.toString();
                 fail("OSGi add resource events are missing for "
-                    + missing.size() + "/" + nPaths + " paths after "
-                    + timeoutMsec + " msec: " + missingStr);
+                        + missing.size()
+                        + "/"
+                        + nPaths
+                        + " paths after "
+                        + timeoutMsec
+                        + " msec: "
+                        + missingStr);
             }
         } finally {
             reg.unregister();
@@ -299,7 +307,7 @@ public class OakServerIT extends OakServerTestSupport {
         } finally {
             s.logout();
             cnd.close();
-            if(counter != null) {
+            if (counter != null) {
                 counter.close();
             }
         }
@@ -326,7 +334,6 @@ public class OakServerIT extends OakServerTestSupport {
             cnd.close();
             counter.close();
         }
-
     }
 
     @Test
@@ -334,9 +341,14 @@ public class OakServerIT extends OakServerTestSupport {
         final String propName = "jcr.repository.name";
         final String name = repository.getDescriptor(propName);
         final String expected = "Oak";
-        if(!name.contains(expected)) {
-            fail("Expected repository descriptor " + propName + " to contain "
-                + expected + ", failed (descriptor=" + name + ")");
+        if (!name.contains(expected)) {
+            fail("Expected repository descriptor "
+                    + propName
+                    + " to contain "
+                    + expected
+                    + ", failed (descriptor="
+                    + name
+                    + ")");
         }
 
         log.info("Running on Oak version {}", repository.getDescriptor("jcr.repository.version"));
@@ -344,10 +356,8 @@ public class OakServerIT extends OakServerTestSupport {
 
     @Test
     public void testContentRepositoryRegistration() {
-        ServiceReference<ContentRepository> serviceReference = bundleContext.getServiceReference(
-                ContentRepository.class
-        );
+        ServiceReference<ContentRepository> serviceReference =
+                bundleContext.getServiceReference(ContentRepository.class);
         assertNotNull("Content Repository service must be registered", serviceReference);
     }
-
 }

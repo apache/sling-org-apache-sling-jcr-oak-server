@@ -19,6 +19,7 @@
 package org.apache.sling.jcr.oak.server.it;
 
 import javax.inject.Inject;
+
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.junit.Test;
@@ -27,24 +28,22 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-/** Test login admin with the test bundle whitelisted (which
- *  is a default from our base class)
- */
+/** Test login admin with the test bundle whitelisted (which is a default from our base class) */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class LoginAdminWhitelistedIT extends OakServerTestSupport {
 
     @Inject
     private SlingRepository repository;
-            
+
     @Inject
     private ResourceResolverFactory resolverFactory;
-    
+
     @Test
     public void testLoginAdmin() throws Exception {
         repository.loginAdministrative(null).logout();
     }
-    
+
     @Test
     public void testGetAdminResourceResolver() throws Exception {
         resolverFactory.getAdministrativeResourceResolver(null).close();

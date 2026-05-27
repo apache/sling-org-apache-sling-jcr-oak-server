@@ -18,8 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import java.util.Map;
-
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.jcr.NoSuchWorkspaceException;
@@ -27,16 +25,19 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import java.util.Map;
+
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.oak.Oak;
 
 /**
- * Custom <code>JackrabbitRepository</code> that ensures that the correct Thread Context ClassLoader is set in OSGi environments
+ * Custom <code>JackrabbitRepository</code> that ensures that the correct Thread Context ClassLoader
+ * is set in OSGi environments
  *
- * <p>Oak still requires that for {@link JackrabbitRepository#login()} and
- * {@link JackrabbitSession#impersonate(Credentials)} calls a custom thread context class loader is set. This wrapper
- * simply ensures that the TCCL is set for all calls.</p>
+ * <p>Oak still requires that for {@link JackrabbitRepository#login()} and {@link
+ * JackrabbitSession#impersonate(Credentials)} calls a custom thread context class loader is set.
+ * This wrapper simply ensures that the TCCL is set for all calls.
  */
 public class TcclWrappingJackrabbitRepository implements JackrabbitRepository {
 
@@ -79,7 +80,7 @@ public class TcclWrappingJackrabbitRepository implements JackrabbitRepository {
         thread.setContextClassLoader(Oak.class.getClassLoader());
 
         try {
-            Session session = wrapped.login(credentials, workspaceName,attributes);
+            Session session = wrapped.login(credentials, workspaceName, attributes);
             return new TcclWrappingJackrabbitSession((JackrabbitSession) session);
         } finally {
             thread.setContextClassLoader(oldClassLoader);
@@ -121,7 +122,5 @@ public class TcclWrappingJackrabbitRepository implements JackrabbitRepository {
     @Override
     public void shutdown() {
         wrapped.shutdown();
-
     }
-
 }

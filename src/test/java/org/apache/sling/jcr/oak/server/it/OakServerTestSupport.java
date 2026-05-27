@@ -18,10 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.inject.Inject;
 import javax.jcr.Item;
 import javax.jcr.Node;
@@ -30,6 +26,10 @@ import javax.jcr.Session;
 import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 import javax.jcr.observation.ObservationManager;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -68,7 +68,6 @@ public abstract class OakServerTestSupport extends TestSupport {
     @Inject
     protected ResourceResolverFactory resourceResolverFactory;
 
-
     protected final List<String> toDelete = new LinkedList<String>();
 
     private final AtomicInteger uniqueNameCounter = new AtomicInteger();
@@ -85,7 +84,7 @@ public abstract class OakServerTestSupport extends TestSupport {
             final int eventTypes = 255; // not sure if that's a recommended value, but common
             final boolean deep = true;
             final String[] uuid = null;
-            final String[] nodeTypeNames = new String[]{"mix:language", "sling:Message"};
+            final String[] nodeTypeNames = new String[] {"mix:language", "sling:Message"};
             final boolean noLocal = true;
             final String root = "/";
             om.addEventListener(this, eventTypes, root, deep, uuid, nodeTypeNames, noLocal);
@@ -176,7 +175,7 @@ public abstract class OakServerTestSupport extends TestSupport {
         versionResolver.setVersion("commons-codec", "commons-codec", "1.16.0");
         versionResolver.setVersion("commons-io", "commons-io", "2.13.0");
 
-        return new Option[]{
+        return new Option[] {
             baseConfiguration(),
             quickstart(),
             // Sling JCR Oak Server
@@ -190,41 +189,48 @@ public abstract class OakServerTestSupport extends TestSupport {
         final String repositoryHome = String.format("%s/repository", slingHome);
         final String localIndexDir = String.format("%s/index", repositoryHome);
         return composite(
-            scr(),
-            slingJcr(),
-            slingJcrRepoinit(),
-            mavenBundle().groupId("org.apache.jackrabbit").artifactId("oak-segment-tar").version(versionResolver),
-            newConfiguration("org.apache.jackrabbit.oak.segment.SegmentNodeStoreService")
-                .put("repository.home", repositoryHome)
-                .put("name", "Default NodeStore")
-                .asOption(),
-            newConfiguration("org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexProviderService")
-                .put("localIndexDir", localIndexDir)
-                .asOption(),
-            newConfiguration("org.apache.sling.jcr.repoinit.impl.RepositoryInitializer")
-                .put("references", new String[]{repoinit})
-                .asOption(),
-            getWhitelistRegexpOption(),
-            // To generate the list of whitelisted bundles after a failed test-run:
-            // grep -R 'NOT white' target/failsafe-reports/ | awk -F': Bundle ' '{print substr($2, 1, index($2, " is NOT "))}' | sort -u
-            factoryConfiguration("org.apache.sling.jcr.base.internal.LoginAdminWhitelist.fragment")
-                .put("whitelist.bundles", new String[]{
-                    "org.apache.sling.jcr.oak.server",
-                    "org.apache.sling.jcr.contentloader",
-                    "org.apache.sling.jcr.resource",
-                    "org.apache.sling.resourceresolver"
-                })
-                .asOption()
-        ).add(
-            // SLING-12035 - add extra bundle for the shaded version of guava used by the latest oak releases
-            //   remove this block after the SlingOptions#jackrabbitOak includes this artifact
-            mavenBundle().groupId("org.apache.jackrabbit").artifactId("oak-shaded-guava").version(versionResolver)
-        );
+                        scr(),
+                        slingJcr(),
+                        slingJcrRepoinit(),
+                        mavenBundle()
+                                .groupId("org.apache.jackrabbit")
+                                .artifactId("oak-segment-tar")
+                                .version(versionResolver),
+                        newConfiguration("org.apache.jackrabbit.oak.segment.SegmentNodeStoreService")
+                                .put("repository.home", repositoryHome)
+                                .put("name", "Default NodeStore")
+                                .asOption(),
+                        newConfiguration("org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexProviderService")
+                                .put("localIndexDir", localIndexDir)
+                                .asOption(),
+                        newConfiguration("org.apache.sling.jcr.repoinit.impl.RepositoryInitializer")
+                                .put("references", new String[] {repoinit})
+                                .asOption(),
+                        getWhitelistRegexpOption(),
+                        // To generate the list of whitelisted bundles after a failed test-run:
+                        // grep -R 'NOT white' target/failsafe-reports/ | awk -F': Bundle ' '{print substr($2,
+                        // 1, index($2, " is NOT "))}' | sort -u
+                        factoryConfiguration("org.apache.sling.jcr.base.internal.LoginAdminWhitelist.fragment")
+                                .put("whitelist.bundles", new String[] {
+                                    "org.apache.sling.jcr.oak.server",
+                                    "org.apache.sling.jcr.contentloader",
+                                    "org.apache.sling.jcr.resource",
+                                    "org.apache.sling.resourceresolver"
+                                })
+                                .asOption())
+                .add(
+                        // SLING-12035 - add extra bundle for the shaded version of guava used by the latest oak
+                        // releases
+                        //   remove this block after the SlingOptions#jackrabbitOak includes this artifact
+                        mavenBundle()
+                                .groupId("org.apache.jackrabbit")
+                                .artifactId("oak-shaded-guava")
+                                .version(versionResolver));
     }
 
     protected Option getWhitelistRegexpOption() {
         return newConfiguration("org.apache.sling.jcr.base.internal.LoginAdminWhitelist")
-            .put("whitelist.bundles.regexp", "PAXEXAM-PROBE-.*")
-            .asOption();
+                .put("whitelist.bundles.regexp", "PAXEXAM-PROBE-.*")
+                .asOption();
     }
 }

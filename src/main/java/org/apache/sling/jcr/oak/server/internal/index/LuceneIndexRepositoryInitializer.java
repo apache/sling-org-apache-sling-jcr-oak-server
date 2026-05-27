@@ -36,14 +36,9 @@ import org.slf4j.LoggerFactory;
 import static org.apache.jackrabbit.oak.plugins.index.IndexConstants.INDEX_DEFINITIONS_NAME;
 
 @Component(
-    property = {
-        Constants.SERVICE_DESCRIPTION + "=Apache Sling JCR Oak Repository – Lucene Index Definition"
-    },
-    configurationPolicy = ConfigurationPolicy.REQUIRE
-)
-@Designate(
-    ocd = LuceneIndexRepositoryInitializerConfiguration.class
-)
+        property = {Constants.SERVICE_DESCRIPTION + "=Apache Sling JCR Oak Repository – Lucene Index Definition"},
+        configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Designate(ocd = LuceneIndexRepositoryInitializerConfiguration.class)
 public class LuceneIndexRepositoryInitializer implements RepositoryInitializer {
 
     private LuceneIndexRepositoryInitializerConfiguration configuration;
@@ -65,14 +60,12 @@ public class LuceneIndexRepositoryInitializer implements RepositoryInitializer {
             if (!index.hasChildNode(configuration.name())) {
                 logger.debug("adding new Lucene index definition");
                 LuceneIndexHelper.newLuceneIndexDefinition(
-                    index,
-                    configuration.name(),
-                    new HashSet<>(Arrays.asList(configuration.includePropertyTypes())),
-                    new HashSet<>(Arrays.asList(configuration.excludePropertyNames())),
-                    "async"
-                );
+                        index,
+                        configuration.name(),
+                        new HashSet<>(Arrays.asList(configuration.includePropertyTypes())),
+                        new HashSet<>(Arrays.asList(configuration.excludePropertyNames())),
+                        "async");
             }
         }
     }
-
 }

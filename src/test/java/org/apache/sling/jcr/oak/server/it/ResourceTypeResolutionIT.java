@@ -18,9 +18,9 @@
  */
 package org.apache.sling.jcr.oak.server.it;
 
-import java.util.HashMap;
-
 import javax.jcr.Node;
+
+import java.util.HashMap;
 
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -41,7 +41,7 @@ public class ResourceTypeResolutionIT extends OakServerTestSupport {
 
     @Test
     public void checkResourceType() throws Exception {
-        JackrabbitSession adminSession = (JackrabbitSession)slingRepository.loginAdministrative(null);
+        JackrabbitSession adminSession = (JackrabbitSession) slingRepository.loginAdministrative(null);
         Node contentBar = JcrUtils.getOrCreateByPath("/content/foo/bar", "nt:unstructured", adminSession);
         contentBar.setProperty("sling:resourceType", "types/foo/bar");
 
@@ -70,6 +70,5 @@ public class ResourceTypeResolutionIT extends OakServerTestSupport {
             // see SLING-6329
             assertThat(resource.isResourceType("types/foo/parent"), is(true));
         }
-
     }
 }

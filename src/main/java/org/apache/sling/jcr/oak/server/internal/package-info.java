@@ -18,7 +18,7 @@
  */
 
 /**
- * Contains an implementation of a SlingRepository based on Apache Jackrabbit Oak.
- * The package is not exported.
+ * Contains an implementation of a SlingRepository based on Apache Jackrabbit Oak. The package is
+ * not exported.
  */
 package org.apache.sling.jcr.oak.server.internal;

@@ -26,17 +26,17 @@ public abstract class Retry {
     public Retry(int timeoutMsec) {
         final long timeout = System.currentTimeMillis() + timeoutMsec;
         Throwable lastT = null;
-        while(System.currentTimeMillis() < timeout) {
+        while (System.currentTimeMillis() < timeout) {
             try {
                 lastT = null;
                 exec();
                 break;
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 lastT = t;
             }
         }
 
-        if(lastT != null) {
+        if (lastT != null) {
             fail("Failed after " + timeoutMsec + " msec: " + lastT);
         }
     }

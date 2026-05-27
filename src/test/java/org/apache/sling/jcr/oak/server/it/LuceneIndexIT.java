@@ -46,15 +46,21 @@ public class LuceneIndexIT extends OakServerTestSupport {
     @Override
     @Configuration
     public Option[] configuration() {
-        // we should only add oak-lucene but oak-lucene has a hard dependency on oak-store-document (OAK-7263)
+        // we should only add oak-lucene but oak-lucene has a hard dependency on oak-store-document
+        // (OAK-7263)
         return combine(
-            super.configuration(),
-            mavenBundle().groupId("org.apache.jackrabbit").artifactId("oak-lucene").version(OAK_VERSION),
-            mavenBundle().groupId("org.apache.jackrabbit").artifactId("oak-store-document").version(OAK_VERSION),
-            newConfiguration("org.apache.sling.jcr.oak.server.internal.index.LuceneIndexRepositoryInitializer")
-                .put("name", "lucy")
-                .asOption()
-        );
+                super.configuration(),
+                mavenBundle()
+                        .groupId("org.apache.jackrabbit")
+                        .artifactId("oak-lucene")
+                        .version(OAK_VERSION),
+                mavenBundle()
+                        .groupId("org.apache.jackrabbit")
+                        .artifactId("oak-store-document")
+                        .version(OAK_VERSION),
+                newConfiguration("org.apache.sling.jcr.oak.server.internal.index.LuceneIndexRepositoryInitializer")
+                        .put("name", "lucy")
+                        .asOption());
     }
 
     @Test
@@ -62,5 +68,4 @@ public class LuceneIndexIT extends OakServerTestSupport {
         assertThat(indexPathService, notNullValue());
         assertThat(indexPathService.getIndexPaths(), hasItem("/oak:index/lucy"));
     }
-
 }
