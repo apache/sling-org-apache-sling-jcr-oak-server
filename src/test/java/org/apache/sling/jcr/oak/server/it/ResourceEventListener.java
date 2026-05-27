@@ -46,10 +46,10 @@ public class ResourceEventListener implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         final String path = (String) event.getProperty("path");
-        if(path != null) {
+        if (path != null) {
             final int n = paths.size();
             synchronized (paths) {
-                if(n % 1000 == 0) {
+                if (n % 1000 == 0) {
                     log.info("Got events for {} paths so far, last path={}", n, path);
                 }
                 paths.add(path);

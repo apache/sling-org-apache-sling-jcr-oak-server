@@ -18,11 +18,6 @@
  */
 package org.apache.sling.jcr.oak.server.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.AccessControlException;
-
 import javax.jcr.AccessDeniedException;
 import javax.jcr.Credentials;
 import javax.jcr.InvalidItemStateException;
@@ -48,6 +43,11 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.retention.RetentionManager;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.version.VersionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.AccessControlException;
 
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -194,21 +194,24 @@ public class TcclWrappingJackrabbitSession implements JackrabbitSession {
     }
 
     @Override
-    public void move(String srcAbsPath, String destAbsPath) throws ItemExistsException, PathNotFoundException,
-            VersionException, ConstraintViolationException, LockException, RepositoryException {
+    public void move(String srcAbsPath, String destAbsPath)
+            throws ItemExistsException, PathNotFoundException, VersionException, ConstraintViolationException,
+                    LockException, RepositoryException {
         wrapped.move(srcAbsPath, destAbsPath);
     }
 
     @Override
-    public void removeItem(String absPath) throws VersionException, LockException, ConstraintViolationException,
-            AccessDeniedException, RepositoryException {
+    public void removeItem(String absPath)
+            throws VersionException, LockException, ConstraintViolationException, AccessDeniedException,
+                    RepositoryException {
         wrapped.removeItem(absPath);
     }
 
     @Override
-    public void save() throws AccessDeniedException, ItemExistsException, ReferentialIntegrityException,
-            ConstraintViolationException, InvalidItemStateException, VersionException, LockException,
-            NoSuchNodeTypeException, RepositoryException {
+    public void save()
+            throws AccessDeniedException, ItemExistsException, ReferentialIntegrityException,
+                    ConstraintViolationException, InvalidItemStateException, VersionException, LockException,
+                    NoSuchNodeTypeException, RepositoryException {
         wrapped.save();
     }
 
@@ -243,15 +246,16 @@ public class TcclWrappingJackrabbitSession implements JackrabbitSession {
     }
 
     @Override
-    public ContentHandler getImportContentHandler(String parentAbsPath, int uuidBehavior) throws PathNotFoundException,
-            ConstraintViolationException, VersionException, LockException, RepositoryException {
+    public ContentHandler getImportContentHandler(String parentAbsPath, int uuidBehavior)
+            throws PathNotFoundException, ConstraintViolationException, VersionException, LockException,
+                    RepositoryException {
         return wrapped.getImportContentHandler(parentAbsPath, uuidBehavior);
     }
 
     @Override
     public void importXML(String parentAbsPath, InputStream in, int uuidBehavior)
             throws IOException, PathNotFoundException, ItemExistsException, ConstraintViolationException,
-            VersionException, InvalidSerializedDataException, LockException, RepositoryException {
+                    VersionException, InvalidSerializedDataException, LockException, RepositoryException {
         wrapped.importXML(parentAbsPath, in, uuidBehavior);
     }
 

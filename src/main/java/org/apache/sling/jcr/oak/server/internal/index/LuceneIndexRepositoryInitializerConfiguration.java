@@ -22,36 +22,18 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(
-    name = "Apache Sling JCR Oak Repository – Lucene Index Definition",
-    description = "Configuration to set up a Lucene Index Definition"
-)
+        name = "Apache Sling JCR Oak Repository – Lucene Index Definition",
+        description = "Configuration to set up a Lucene Index Definition")
 @interface LuceneIndexRepositoryInitializerConfiguration {
 
-    @AttributeDefinition(
-        name = "Index Name",
-        description = "The name of the index."
-    )
+    @AttributeDefinition(name = "Index Name", description = "The name of the index.")
     String name() default "lucene";
 
-    @AttributeDefinition(
-        name = "Include Property Types",
-        description = "Property types which should be indexed."
-    )
-    String[] includePropertyTypes() default {
-        "String",
-        "Binary"
-    };
+    @AttributeDefinition(name = "Include Property Types", description = "Property types which should be indexed.")
+    String[] includePropertyTypes() default {"String", "Binary"};
 
-    @AttributeDefinition(
-        name = "Exclude Property Names",
-        description = "Properties which should not be indexed."
-    )
+    @AttributeDefinition(name = "Exclude Property Names", description = "Properties which should not be indexed.")
     String[] excludePropertyNames() default {
-        "jcr:createdBy",
-        "jcr:lastModifiedBy",
-        "sling:alias",
-        "sling:resourceType",
-        "sling:vanityPath"
+        "jcr:createdBy", "jcr:lastModifiedBy", "sling:alias", "sling:resourceType", "sling:vanityPath"
     };
-
 }

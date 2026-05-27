@@ -19,6 +19,7 @@
 package org.apache.sling.jcr.oak.server.it;
 
 import javax.inject.Inject;
+
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.junit.Test;
@@ -36,15 +37,15 @@ public class LoginAdminWhitelistedIT extends OakServerTestSupport {
 
     @Inject
     private SlingRepository repository;
-            
+
     @Inject
     private ResourceResolverFactory resolverFactory;
-    
+
     @Test
     public void testLoginAdmin() throws Exception {
         repository.loginAdministrative(null).logout();
     }
-    
+
     @Test
     public void testGetAdminResourceResolver() throws Exception {
         resolverFactory.getAdministrativeResourceResolver(null).close();
