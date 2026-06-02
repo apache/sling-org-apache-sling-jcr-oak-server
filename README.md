@@ -6,15 +6,71 @@
 
 This module is part of the [Apache Sling](https://sling.apache.org) project.
 
-This bundle provides a SlingRepository based on Apache Jackrabbit Oak.
+This bundle provides a `SlingRepository` based on Apache Jackrabbit Oak.
 
+It runs inside an OSGi container and wires Oak services into Sling JCR. Besides registering the JCR `Repository`/`SlingRepository`, it also registers Oak's `ContentRepository`, provides a default thread pool capability, and can initialize a configurable Lucene index definition.
 
 ## Compatibility
 
-When paring the bundles in your installation, these are the version combinations that would be compatible:
+When pairing bundles in your installation, these are the compatible version combinations:
 
 | Apache Sling JCR Oak Server | Apache Jackrabbit Oak |
 |---|---|
 | 1.3.0 | 1.8.9 to 1.54.0 |
 | 1.4.0 | 1.56.0 to 1.60.0 |
 | 1.4.2 | 1.56.0 or newer |
+| 1.4.4 | 1.56.0 or newer |
+| 1.4.5-SNAPSHOT | 1.56.0 or newer |
+
+## Build and test
+
+```bash
+# Build and package (skip integration tests)
+mvn clean package -DskipTests
+
+# Full build (includes integration tests)
+mvn clean verify
+
+# Run integration tests only (bundle must already be built)
+mvn failsafe:integration-test failsafe:verify
+
+# Run one integration test class
+mvn verify -Dit.test=OakServerIT
+
+# Check OSGi baseline/API compatibility
+mvn verify -Dbaseline.skip=false
+
+# Formatting
+mvn spotless:check
+mvn spotless:apply
+```
+
+## Key implementation notes
+
+- Java baseline is Java 8 (`sling.java.version=8`).
+- OSGi Declarative Services use official `org.osgi.service.component.annotations` (no legacy Felix SCR annotations).
+- Lucene index initialization is configurable via OSGi configuration (`LuceneIndexRepositoryInitializerConfiguration`) and activates only when configured.
+- `oak-lucene` and `com.mongodb` imports are optional at runtime.
+
+## Repository layout
+
+```text
+src/main/java/org/apache/sling/jcr/oak/server/internal/
+  OakSlingRepositoryManager.java
+  OakSlingRepository.java
+  DefaultThreadPoolRegistrar.java
+  TcclWrappingJackrabbitRepository.java
+  TcclWrappingJackrabbitSession.java
+  index/
+    LuceneIndexRepositoryInitializer.java
+    LuceneIndexRepositoryInitializerConfiguration.java
+
+src/test/java/org/apache/sling/jcr/oak/server/it/
+  OakServerIT.java
+  LuceneIndexIT.java
+  ResourceTypeResolutionIT.java
+  LoginAdminBlacklistedIT.java
+  LoginAdminWhitelistedIT.java
+  Sling9719IT.java
+  Sling9826IT.java
+```
