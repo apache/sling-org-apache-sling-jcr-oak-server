@@ -103,3 +103,10 @@ target/                           Build output (not committed)
 - MongoDB support is wired as `resolution:=optional` in `bnd.bnd`. Do not add hard runtime dependencies on `com.mongodb`.
 - `TcclWrappingJackrabbitRepository` and `TcclWrappingJackrabbitSession` exist solely to set the thread context classloader for Oak code that relies on TCCL-based service loading. Do not bypass these wrappers.
 - OSGi baseline checks compare against the last released version. A `@ConsumerType`/`@ProviderType` mismatch or accidental package export will fail the baseline check.
+
+# Security
+
+<!-- sling-security-default:start -->
+The threat model for this project is https://github.com/apache/sling/blob/master/docs/threat-model.md .
+<!-- sling-security-default:end -->
+
